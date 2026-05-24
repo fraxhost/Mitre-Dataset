@@ -1,66 +1,57 @@
 """
-Base LLM Evaluation — multi-model, no fine-tuning
-==================================================
-Evaluates a base model on the MITRE ATT&CK dataset with the same metrics
-as Fine-Tune/metrics.py so results are directly comparable across models.
+Fine-Tuned Model Evaluation — multi-model
+==========================================
+Python rewrite of Fine-Tune/metrics.ipynb, extended to support three models.
+Loads a fine-tuned model (LoRA adapters or merged weights) and evaluates it
+on the test split using the same metrics as Base-LLM-Evaluation/base_model_eval.py
+so base vs fine-tuned comparisons are exact.
 
 Supported models (--model flag):
   qwen   →  Qwen/Qwen2.5-1.5B-Instruct
   llama  →  meta-llama/Llama-3.2-3B-Instruct
   phi    →  microsoft/Phi-4-mini-instruct
 
-Uses vLLM offline batch inference — all prompts are submitted in a
-single llm.generate() call and processed in parallel across all GPUs.
-Designed for headless / nohup execution on NVIDIA hardware.
-
-Optimised for 4 × NVIDIA RTX Ada 6000 (48 GB each, 192 GB total VRAM).
-Also works on any other CUDA setup by adjusting --tensor-parallel-size.
-
-  - Each model's native chat template is applied automatically
-  - Results are written to results/{ModelName}/ for easy side-by-side comparison
-  - All output is logged with timestamps to stdout AND a log file
-  - Matplotlib uses the Agg backend (no display needed)
-  - All figures are saved to disk, not shown interactively
+Uses Transformers (not vLLM) for inference so PEFT LoRA adapters can be
+loaded directly without merging weights.
 
 Usage
 -----
-  # Qwen (default, backward-compatible)
-  python base_model_eval.py --model qwen
+  # Evaluate fine-tuned Llama (model-path is the output of fine_tune.py)
+  python Fine-Tune/metrics.py --model llama --model-path models/Llama-3.2-3B
 
-  # Llama — downloads abirashab/train-test-val from Kaggle, saves to results/Llama-3.2-3B/
-  python base_model_eval.py --model llama --eval-limit None
+  # Full test set
+  python Fine-Tune/metrics.py --model phi --model-path models/Phi-4-mini \\
+      --eval-limit None
 
-  # Phi — local data, background run
-  nohup python base_model_eval.py --model phi --data-path /path/to/data \
-      > results/Phi-4-mini/eval.log 2>&1 &
+  # All splits combined
+  python Fine-Tune/metrics.py --model qwen --model-path models/Qwen2.5-1.5B \\
+      --splits train val test --eval-limit None
 
-  # All three splits combined
-  python base_model_eval.py --model llama --splits train val test
-
-  # Smoke-test (50 samples, 1 GPU)
-  python base_model_eval.py --model phi --eval-limit 50 --tensor-parallel-size 1 --no-save
+  # Smoke-test
+  python Fine-Tune/metrics.py --model llama --model-path models/Llama-3.2-3B \\
+      --eval-limit 50 --no-save
 """
 
-# ── Matplotlib must switch to non-interactive backend BEFORE any other import ──
+# ── Matplotlib non-interactive backend before any other import ───────────────
 import matplotlib
 matplotlib.use("Agg")
 
-# ── Standard library ────────────────────────────────────────────────────────────
+# ── Standard library ─────────────────────────────────────────────────────────
 import argparse
 import logging
 import os
-import subprocess
 import sys
 import time
 from collections import Counter
 from pathlib import Path
 
-# ── Third-party ─────────────────────────────────────────────────────────────────
+# ── Third-party ──────────────────────────────────────────────────────────────
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from datasets import load_dataset
+import torch
+from datasets import load_dataset, concatenate_datasets
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
@@ -69,7 +60,7 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
 )
-from vllm import LLM, SamplingParams
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -82,89 +73,55 @@ MODEL_REGISTRY = {
         "display_name":      "Qwen2.5-1.5B",
         "chat_template":     "qwen",
         "trust_remote_code": True,
-        "dtype":             "bfloat16",
-        # vLLM stop tokens — Qwen uses standard EOS; no extra stop needed
-        "stop_tokens":       [],
+        "torch_dtype":       torch.float16,
     },
     "llama": {
         "model_id":          "meta-llama/Llama-3.2-3B-Instruct",
         "display_name":      "Llama-3.2-3B",
         "chat_template":     "llama3",
         "trust_remote_code": False,
-        "dtype":             "bfloat16",
-        # Stop at Llama's end-of-turn token so generation doesn't bleed over
-        "stop_tokens":       ["<|eot_id|>"],
+        "torch_dtype":       torch.bfloat16,
     },
     "phi": {
         "model_id":          "microsoft/Phi-4-mini-instruct",
         "display_name":      "Phi-4-mini",
         "chat_template":     "phi4",
         "trust_remote_code": False,
-        "dtype":             "bfloat16",
-        # Stop at Phi's end token
-        "stop_tokens":       ["<|end|>"],
+        "torch_dtype":       torch.bfloat16,
     },
 }
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION 2 — CONFIGURATION  (edit here or override with CLI flags)
+# SECTION 2 — CONFIGURATION  (matches metrics.ipynb Cell 3 exactly)
 # ══════════════════════════════════════════════════════════════════════════════
 
 CONFIG = {
-    # ── Model — set via --model (qwen / llama / phi); fields below are
-    #    overridden automatically from MODEL_REGISTRY on startup.
-    "model_key":   "qwen",
-    "model_name":  MODEL_REGISTRY["qwen"]["model_id"],
-    "display_name": MODEL_REGISTRY["qwen"]["display_name"],
-
-    # ── Data source ───────────────────────────────────────────────────────────
-    # The dataset lives on Kaggle as abirashab/train-test-val.
-    # kagglehub downloads it automatically on first run and caches it locally.
-    # Override with --data-path if you already have the files on disk.
+    # ── Data ─────────────────────────────────────────────────────────────────
     "kaggle_dataset": "abirashab/train-test-val",
-    "data_path":      None,          # set by --data-path to skip Kaggle download
+    "data_path":      None,
+    "splits":         ["test"],
+    "train_file":     "train.jsonl",
+    "val_file":       "val.jsonl",
+    "test_file":      "test.jsonl",
 
-    # splits: one or more of "train", "val", "test".
-    # All listed files are loaded and concatenated into one eval pool so that
-    # stratified sampling and metrics cover the full combined set.
-    "splits":      ["test"],
-    "train_file":  "train.jsonl",
-    "val_file":    "val.jsonl",
-    "test_file":   "test.jsonl",
+    # ── Evaluation ───────────────────────────────────────────────────────────
+    "eval_limit":          2000,   # None = full dataset
+    "suspicious_ratio":    0.30,
+    "prioritize_shortest": True,
+    "max_new_tokens":      512,
+    "temperature":         0.7,
+    "do_sample":           True,
+    "top_p":               0.9,
 
-    # ── Evaluation ────────────────────────────────────────────────────────────
-    "eval_limit": 2000,          # set to None to evaluate the full test set
-    "suspicious_ratio": 0.30,    # fraction of suspicious samples when eval_limit is set
-    "prioritize_shortest": True, # process shortest logs first (faster on limited hardware)
-    "max_new_tokens": 512,
-    "temperature": 0.7,          # matches Fine-Tune/metrics.py
-    "top_p": 0.9,                # matches Fine-Tune/metrics.py
+    # ── Prompt ───────────────────────────────────────────────────────────────
+    "max_input_chars":     6000,
+    "max_length_tokens":   3072,   # tokeniser truncation limit
 
-    # ── Prompt / tokenisation ─────────────────────────────────────────────────
-    "max_input_chars": 6000,     # truncate input JSON beyond this character count
-
-    # ── vLLM inference ────────────────────────────────────────────────────────
-    # tensor_parallel_size: spread the model across N GPUs.
-    #   4 × Ada 6000 (48 GB each, 192 GB total)  →  4
-    #   2 × GPU                                   →  2
-    #   1 × GPU                                   →  1
-    "tensor_parallel_size": 4,
-
-    # gpu_memory_utilization: fraction of VRAM vLLM may use per GPU.
-    # 0.90 is the recommended default — leaves a small buffer for CUDA overhead.
-    "gpu_memory_utilization": 0.90,
-
-    # dtype: "float16" or "bfloat16".
-    # Ada 6000 (Ampere-class) supports both; bfloat16 is slightly more numerically
-    # stable for LLM inference. Use "float16" if you encounter NaN/inf issues.
-    "dtype": "bfloat16",
-
-    # ── Output ────────────────────────────────────────────────────────────────
-    "show_examples": 10,
-    "save_results": True,
-    # output_dir is auto-set to results/{display_name}/ if not overridden by --output-dir
-    "output_dir": None,
+    # ── Output ───────────────────────────────────────────────────────────────
+    "show_examples":  10,
+    "save_results":   True,
+    "output_dir":     None,        # auto-set to results/{display_name}
 }
 
 
@@ -173,40 +130,27 @@ CONFIG = {
 # ══════════════════════════════════════════════════════════════════════════════
 
 def setup_logging(output_dir: str) -> logging.Logger:
-    """
-    Write timestamped logs to both stdout and a dedicated log file so that
-    nohup output and a live `tail -f` both work simultaneously.
-    """
-    log_path = Path(output_dir) / "base_eval_run.log"
+    log_path = Path(output_dir) / "metrics_run.log"
     fmt      = "%(asctime)s | %(levelname)-8s | %(message)s"
     datefmt  = "%Y-%m-%d %H:%M:%S"
-
     handlers = [
         logging.StreamHandler(sys.stdout),
         logging.FileHandler(log_path, mode="w", encoding="utf-8"),
     ]
-    logging.basicConfig(level=logging.INFO, format=fmt, datefmt=datefmt, handlers=handlers)
-    logger = logging.getLogger("base_eval")
+    logging.basicConfig(level=logging.INFO, format=fmt, datefmt=datefmt,
+                        handlers=handlers, force=True)
+    logger = logging.getLogger("metrics")
     logger.info(f"Log file: {log_path.resolve()}")
     return logger
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION 4 — UTILITY FUNCTIONS
+# SECTION 4 — CHAT TEMPLATE & PROMPT HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
 
 def build_prompt(instruction: str, input_text: str, model_key: str,
                  max_input_chars: int) -> str:
-    """
-    Build an inference prompt using the model's native chat template.
-
-    Each format produces the prompt portion only (no output / assistant reply).
-    The model is expected to continue from the assistant turn start.
-
-    Qwen   — raw text (matches training data format from fine-tune.ipynb)
-    Llama3 — Llama-3.x header tokens
-    Phi4   — Phi-4 <|user|> / <|assistant|> tokens
-    """
+    """Build the inference prompt using the model's native chat template."""
     if len(input_text) > max_input_chars:
         input_text = input_text[:max_input_chars] + "... [truncated]"
 
@@ -223,14 +167,14 @@ def build_prompt(instruction: str, input_text: str, model_key: str,
             f"<|user|>\n{instruction}\n\n{input_text}\n\nAnalysis:<|end|>\n"
             "<|assistant|>\n"
         )
-    # Default / qwen — plain text, same as original format
+    # qwen / default — plain text
     return f"{instruction}\n\n{input_text}\n\nAnalysis:\n"
 
 
 def extract_status_label(text: str) -> str:
     """
     Parse NORMAL / SUSPICIOUS / UNKNOWN from model output.
-    Identical logic to Fine-Tune/metrics.ipynb for comparability.
+    Identical to base_model_eval.py and metrics.ipynb for cross-script comparability.
     """
     if not text or not isinstance(text, str):
         return "UNKNOWN"
@@ -253,7 +197,6 @@ def extract_status_label(text: str) -> str:
         if m in t:
             return "NORMAL"
 
-    # Fallback: plain-text format from training data
     if "status: normal" in t or "status:normal" in t:
         return "NORMAL"
     if "status: suspicious" in t or "status:suspicious" in t:
@@ -288,75 +231,55 @@ def calculate_word_f1(pred: str, target: str) -> float:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION 5 — PIPELINE STEPS
+# SECTION 5 — MODEL LOADING
 # ══════════════════════════════════════════════════════════════════════════════
 
-def load_model(cfg: dict, log: logging.Logger) -> LLM:
-    """
-    Initialise vLLM with the selected base model (no LoRA adapters).
-
-    vLLM automatically detects all visible CUDA GPUs and distributes the
-    model across tensor_parallel_size of them.  On 4 × Ada 6000 (48 GB
-    each) this gives 192 GB of VRAM to work with.
-    """
-    reg = MODEL_REGISTRY[cfg["model_key"]]
+def load_model_and_tokenizer(cfg: dict, log: logging.Logger):
+    reg        = MODEL_REGISTRY[cfg["model_key"]]
+    model_path = cfg["model_path"]
 
     log.info("=" * 70)
-    log.info("STEP 1 — Loading base model with vLLM")
+    log.info("STEP 1 — Loading fine-tuned model")
     log.info("=" * 70)
-    log.info(f"Model                  : {cfg['model_name']}  (base — no LoRA adapters)")
-    log.info(f"Display name           : {cfg['display_name']}")
-    log.info(f"Chat template          : {reg['chat_template']}")
-    log.info(f"tensor_parallel_size   : {cfg['tensor_parallel_size']}")
-    log.info(f"gpu_memory_utilization : {cfg['gpu_memory_utilization']}")
-    log.info(f"dtype                  : {cfg['dtype']}")
+    log.info(f"Model path    : {model_path}")
+    log.info(f"Display name  : {cfg['display_name']}")
+    log.info(f"Chat template : {reg['chat_template']}")
+    log.info(f"torch_dtype   : {reg['torch_dtype']}")
 
-    # Log GPU topology if nvidia-smi is available
-    try:
-        smi = subprocess.check_output(
-            ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"],
-            stderr=subprocess.DEVNULL, text=True,
-        ).strip()
-        for i, line in enumerate(smi.splitlines()):
-            log.info(f"  GPU {i}: {line}")
-    except (FileNotFoundError, subprocess.CalledProcessError):
-        pass
-
-    llm = LLM(
-        model=cfg["model_name"],
-        tensor_parallel_size=cfg["tensor_parallel_size"],
-        gpu_memory_utilization=cfg["gpu_memory_utilization"],
-        dtype=cfg["dtype"],
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_path,
         trust_remote_code=reg["trust_remote_code"],
-        # Swap space (GB) on CPU RAM for KV cache overflow
-        swap_space=4,
     )
+    tokenizer.pad_token = tokenizer.eos_token
 
-    log.info("vLLM engine initialised successfully.")
-    return llm
+    model = AutoModelForCausalLM.from_pretrained(
+        model_path,
+        torch_dtype=reg["torch_dtype"],
+        device_map="auto",
+        trust_remote_code=reg["trust_remote_code"],
+    )
+    model.eval()
 
+    log.info(f"GPU memory after load: {torch.cuda.memory_allocated() / 1024**3:.2f} GB")
+    log.info(f"Model device: {model.device}")
+    return model, tokenizer
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SECTION 6 — DATA LOADING
+# ══════════════════════════════════════════════════════════════════════════════
 
 def resolve_data_dir(cfg: dict, log: logging.Logger) -> str:
-    """
-    Return the directory that contains the JSONL split files.
-
-    Priority:
-      1. --data-path CLI flag (user already has files locally)
-      2. kagglehub download of cfg["kaggle_dataset"]
-    """
     if cfg["data_path"]:
-        data_dir = cfg["data_path"]
-        log.info(f"Using local data directory: {data_dir}")
-        return data_dir
-
+        log.info(f"Using local data directory: {cfg['data_path']}")
+        return cfg["data_path"]
     try:
         import kagglehub
     except ImportError:
         raise ImportError(
             "kagglehub is not installed. Run: pip install kagglehub\n"
-            "Or provide --data-path to a local directory containing the JSONL files."
+            "Or use --data-path to point at a local directory."
         )
-
     log.info(f"Downloading Kaggle dataset: {cfg['kaggle_dataset']}")
     log.info("(Cached after first download — subsequent runs are instant.)")
     data_dir = kagglehub.dataset_download(cfg["kaggle_dataset"])
@@ -375,13 +298,10 @@ def load_data(cfg: dict, log: logging.Logger):
         "test":  cfg["test_file"],
     }
 
-    data_dir = resolve_data_dir(cfg, log)
-
-    # Collect the requested splits, skipping any whose files are absent
+    data_dir   = resolve_data_dir(cfg, log)
     data_files = {}
     for split in cfg["splits"]:
-        fname = split_file_map[split]
-        fpath = os.path.join(data_dir, fname)
+        fpath = os.path.join(data_dir, split_file_map[split])
         if not os.path.exists(fpath):
             log.warning(f"Split file not found, skipping: {fpath}")
         else:
@@ -390,28 +310,23 @@ def load_data(cfg: dict, log: logging.Logger):
 
     if not data_files:
         raise FileNotFoundError(
-            f"No JSONL files found for splits {cfg['splits']} in: {data_dir}\n"
-            "Check --data-path / --splits, or ensure kagglehub downloaded correctly."
+            f"No JSONL files found for splits {cfg['splits']} in: {data_dir}"
         )
 
-    raw = load_dataset("json", data_files=data_files)
-
-    # Concatenate all splits into one dataset
-    from datasets import concatenate_datasets
-    parts = [raw[s] for s in data_files]
+    raw    = load_dataset("json", data_files=data_files)
+    parts  = [raw[s] for s in data_files]
     dataset = concatenate_datasets(parts) if len(parts) > 1 else parts[0]
 
     log.info(
         f"Loaded splits: {list(data_files.keys())}  —  "
-        f"{len(dataset):,} total examples.  Columns: {dataset.column_names}"
+        f"{len(dataset):,} examples.  Columns: {dataset.column_names}"
     )
-
-    sample = dataset[0]
-    log.info(f"Sample instruction : {sample['instruction'][:100]}")
-    log.info(f"Sample input       : {sample['input'][:120]}...")
-    log.info(f"Sample output      : {sample['output'][:120]}...")
     return dataset
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SECTION 7 — STRATIFIED SAMPLING
+# ══════════════════════════════════════════════════════════════════════════════
 
 def build_eval_set(dataset, cfg: dict, log: logging.Logger):
     log.info("=" * 70)
@@ -419,7 +334,7 @@ def build_eval_set(dataset, cfg: dict, log: logging.Logger):
     log.info("=" * 70)
 
     if cfg["eval_limit"] is None:
-        log.info(f"Using full test set: {len(dataset):,} examples")
+        log.info(f"Using full dataset: {len(dataset):,} examples")
         return dataset
 
     log.info(
@@ -464,87 +379,69 @@ def build_eval_set(dataset, cfg: dict, log: logging.Logger):
 
     log.info(f"Selected — suspicious: {len(sel_susp):,}  normal: {len(sel_normal):,}")
 
-    if sel_susp:
-        log.info(
-            f"Suspicious lengths: "
-            f"{min(s['length'] for s in sel_susp):,} – "
-            f"{max(s['length'] for s in sel_susp):,} chars"
-        )
-    if sel_normal:
-        log.info(
-            f"Normal lengths:     "
-            f"{min(s['length'] for s in sel_normal):,} – "
-            f"{max(s['length'] for s in sel_normal):,} chars"
-        )
-
     indices  = [s["index"] for s in sel_susp + sel_normal]
     eval_set = dataset.select(indices)
     log.info(f"Final eval set: {len(eval_set):,} examples")
     return eval_set
 
 
-def run_inference(eval_set, llm: LLM, cfg: dict, log: logging.Logger):
-    log.info("=" * 70)
-    log.info("STEP 4 — Building prompts")
-    log.info("=" * 70)
+# ══════════════════════════════════════════════════════════════════════════════
+# SECTION 8 — INFERENCE
+# ══════════════════════════════════════════════════════════════════════════════
 
-    model_key = cfg["model_key"]
-    prompts  = [
-        build_prompt(ex["instruction"], ex["input"], model_key, cfg["max_input_chars"])
-        for ex in eval_set
-    ]
-    expected = [ex["output"] for ex in eval_set]
-    log.info(f"{len(prompts):,} prompts built  (template: {MODEL_REGISTRY[model_key]['chat_template']})")
-    log.info(f"Sample prompt (first 400 chars):\n{prompts[0][:400]}...")
+def generate_response(model, tokenizer, instruction: str, input_text: str,
+                      cfg: dict) -> str:
+    """
+    Generate a single prediction using Transformers .generate().
+    Mirrors metrics.ipynb Cell 6 generate_response() exactly.
+    """
+    prompt = build_prompt(instruction, input_text, cfg["model_key"], cfg["max_input_chars"])
 
-    log.info("=" * 70)
-    log.info("STEP 5 — Offline batch inference (vLLM)")
-    log.info("=" * 70)
-    log.info(
-        f"tensor_parallel_size: {cfg['tensor_parallel_size']}  |  "
-        f"temp: {cfg['temperature']}  top_p: {cfg['top_p']}  "
-        f"max_new_tokens: {cfg['max_new_tokens']}"
+    inputs = tokenizer(
+        prompt,
+        return_tensors="pt",
+        truncation=True,
+        max_length=cfg["max_length_tokens"],
     )
-    stop_tokens = MODEL_REGISTRY[model_key]["stop_tokens"]
-    if stop_tokens:
-        log.info(f"Stop tokens: {stop_tokens}")
-    log.info(
-        "Submitting all prompts in a single llm.generate() call — "
-        "vLLM handles continuous batching internally."
+    inputs = {k: v.to(model.device) for k, v in inputs.items()}
+
+    with torch.no_grad():
+        output_ids = model.generate(
+            **inputs,
+            max_new_tokens=cfg["max_new_tokens"],
+            temperature=cfg["temperature"],
+            do_sample=cfg["do_sample"],
+            top_p=cfg["top_p"],
+            pad_token_id=tokenizer.eos_token_id,
+        )
+
+    generated = tokenizer.decode(
+        output_ids[0][inputs["input_ids"].shape[1]:],
+        skip_special_tokens=True,
     )
-
-    sampling_params = SamplingParams(
-        temperature=cfg["temperature"],
-        top_p=cfg["top_p"],
-        max_tokens=cfg["max_new_tokens"],
-        stop=stop_tokens if stop_tokens else None,
-    )
-
-    t0      = time.time()
-    outputs = llm.generate(prompts, sampling_params)   # blocking until all done
-    elapsed = time.time() - t0
-
-    # Extract generated text from vLLM RequestOutput objects
-    predictions = [out.outputs[0].text.strip() for out in outputs]
-
-    log.info(
-        f"Inference complete: {elapsed / 60:.2f} min total  "
-        f"({elapsed / len(prompts):.2f} sec/example)"
-    )
-    return predictions, expected, elapsed
+    return generated.strip()
 
 
-def compute_metrics(predictions, expected, eval_set, elapsed, cfg, log):
+def run_evaluation(eval_set, model, tokenizer, cfg: dict, log: logging.Logger):
     log.info("=" * 70)
-    log.info("STEP 6 — Computing per-example metrics")
+    log.info("STEP 4 — Running evaluation")
     log.info("=" * 70)
+    log.info(f"Evaluating {len(eval_set):,} examples  (chat template: {MODEL_REGISTRY[cfg['model_key']]['chat_template']})")
 
-    results           = []
+    results     = []
+    partial_scores = []
+    word_f1_scores = []
     exact_match_total = 0.0
-    partial_scores    = []
-    word_f1_scores    = []
 
-    for i, (pred, exp) in enumerate(zip(predictions, expected)):
+    t0 = time.time()
+    for i, example in enumerate(eval_set):
+        pred = generate_response(
+            model, tokenizer,
+            example["instruction"], example["input"],
+            cfg,
+        )
+        exp = example["output"]
+
         em      = calculate_exact_match(pred, exp)
         partial = calculate_partial_match(pred, exp)
         wf1     = calculate_word_f1(pred, exp)
@@ -555,8 +452,8 @@ def compute_metrics(predictions, expected, eval_set, elapsed, cfg, log):
 
         results.append({
             "index":         i,
-            "instruction":   eval_set[i]["instruction"],
-            "input":         eval_set[i]["input"],
+            "instruction":   example["instruction"],
+            "input":         example["input"],
             "expected":      exp,
             "predicted":     pred,
             "exact_match":   em,
@@ -564,7 +461,17 @@ def compute_metrics(predictions, expected, eval_set, elapsed, cfg, log):
             "f1_score":      wf1,
         })
 
-    # Log sample predictions
+        if (i + 1) % 50 == 0 or i == 0:
+            elapsed_so_far = time.time() - t0
+            log.info(
+                f"  [{i+1:>5}/{len(eval_set)}]  "
+                f"{elapsed_so_far / 60:.1f} min elapsed  "
+                f"({elapsed_so_far / (i+1):.1f} sec/example)"
+            )
+
+    elapsed = time.time() - t0
+
+    # Show sample predictions
     n_show = min(cfg["show_examples"], len(results))
     for i in range(n_show):
         r = results[i]
@@ -578,9 +485,21 @@ def compute_metrics(predictions, expected, eval_set, elapsed, cfg, log):
             f"partial={r['partial_match']:.3f}  word_f1={r['f1_score']:.3f}"
         )
 
-    # ── Classification metrics ────────────────────────────────────────────────
+    log.info(
+        f"Evaluation complete: {elapsed / 60:.2f} min total  "
+        f"({elapsed / len(results):.2f} sec/example)"
+    )
+    return results, exact_match_total, partial_scores, word_f1_scores, elapsed
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SECTION 9 — METRICS
+# ══════════════════════════════════════════════════════════════════════════════
+
+def compute_metrics(results, exact_match_total, partial_scores, word_f1_scores,
+                    elapsed, cfg, log):
     log.info("=" * 70)
-    log.info("STEP 7 — Classification metrics")
+    log.info("STEP 5 — Computing classification metrics")
     log.info("=" * 70)
 
     y_true = [extract_status_label(r["expected"])  for r in results]
@@ -590,6 +509,14 @@ def compute_metrics(predictions, expected, eval_set, elapsed, cfg, log):
     log.info(f"Labels found: {unique_labels}")
     log.info(f"True  dist : {dict(Counter(y_true))}")
     log.info(f"Pred  dist : {dict(Counter(y_pred))}")
+
+    # Warn if majority are UNKNOWN (model not following format)
+    unknown_rate = y_pred.count("UNKNOWN") / len(y_pred)
+    if unknown_rate > 0.5:
+        log.warning(
+            f"⚠  {unknown_rate*100:.1f}% of predictions are UNKNOWN — "
+            "model may not be following the expected output format."
+        )
 
     accuracy      = accuracy_score(y_true, y_pred)
     prec_macro    = precision_score(y_true, y_pred, average="macro",    zero_division=0)
@@ -633,29 +560,8 @@ def compute_metrics(predictions, expected, eval_set, elapsed, cfg, log):
     log.info(f"  Exact Match Accuracy : {exact_match_acc:.4f}  ({exact_match_acc * 100:.2f}%)")
     log.info(f"  Avg Partial Match    : {avg_partial:.4f}")
     log.info(f"  Avg Word-level F1    : {avg_word_f1:.4f}")
-
     log.info("SKLEARN CLASSIFICATION REPORT")
     log.info("\n" + classification_report(y_true, y_pred, labels=unique_labels, zero_division=0))
-
-    # ── Prediction breakdown ──────────────────────────────────────────────────
-    unknown_count    = y_pred.count("UNKNOWN")
-    normal_count     = y_pred.count("NORMAL")
-    suspicious_count = y_pred.count("SUSPICIOUS")
-    log.info("PREDICTION BREAKDOWN")
-    log.info(f"  SUSPICIOUS : {suspicious_count:,}  ({suspicious_count / len(results) * 100:.1f}%)")
-    log.info(f"  NORMAL     : {normal_count:,}  ({normal_count / len(results) * 100:.1f}%)")
-    log.info(f"  UNKNOWN    : {unknown_count:,}  ({unknown_count / len(results) * 100:.1f}%)")
-
-    incorrect = [(yt, yp, r) for yt, yp, r in zip(y_true, y_pred, results) if yt != yp]
-    log.info(f"  Correct   : {len(results) - len(incorrect):,} / {len(results):,}")
-    log.info(f"  Incorrect : {len(incorrect):,} / {len(results):,}")
-    if incorrect:
-        yt, yp, r = incorrect[0]
-        log.info("  Sample incorrect prediction:")
-        log.info(f"    True label : {yt}  |  Pred label : {yp}")
-        log.info(f"    Input      : {r['input'][:120]}...")
-        log.info(f"    Expected   : {r['expected'][:150]}...")
-        log.info(f"    Predicted  : {r['predicted'][:150]}...")
 
     metrics = {
         "accuracy":        accuracy,
@@ -669,30 +575,33 @@ def compute_metrics(predictions, expected, eval_set, elapsed, cfg, log):
         "avg_partial":     avg_partial,
         "avg_word_f1":     avg_word_f1,
     }
-    return results, y_true, y_pred, unique_labels, conf_mat, metrics
+    return metrics, y_true, y_pred, unique_labels, conf_mat
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SECTION 10 — SAVE OUTPUTS
+# ══════════════════════════════════════════════════════════════════════════════
 
 def save_outputs(results, y_true, y_pred, unique_labels, conf_mat, metrics,
-                 elapsed, eval_set, cfg, log):
+                 elapsed, cfg, log):
     out_dir = Path(cfg["output_dir"])
     out_dir.mkdir(parents=True, exist_ok=True)
 
     log.info("=" * 70)
-    log.info("STEP 8 — Saving results")
+    log.info("STEP 6 — Saving results")
     log.info("=" * 70)
 
     if cfg["save_results"]:
-        # ── CSV: per-example results ──────────────────────────────────────────
         results_df = pd.DataFrame(results)
         results_df["true_label"]      = y_true
         results_df["predicted_label"] = y_pred
         results_df["correct"]         = results_df["true_label"] == results_df["predicted_label"]
 
-        results_path = out_dir / "base_model_evaluation_results.csv"
+        results_path = out_dir / "evaluation_results.csv"
         results_df.to_csv(results_path, index=False)
         log.info(f"Per-example results saved : {results_path}")
 
-        # ── CSV: metrics summary ──────────────────────────────────────────────
+        m = metrics
         metrics_df = pd.DataFrame({
             "Metric": [
                 "Model",
@@ -708,34 +617,28 @@ def save_outputs(results, y_true, y_pred, unique_labels, conf_mat, metrics,
                 "Avg F1 (Word-level)",
             ],
             "Score": [
-                cfg["model_name"] + " (base)",
-                metrics["accuracy"],
-                metrics["prec_macro"],
-                metrics["prec_weighted"],
-                metrics["rec_macro"],
-                metrics["rec_weighted"],
-                metrics["f1_macro"],
-                metrics["f1_weighted"],
-                metrics["exact_match_acc"],
-                metrics["avg_partial"],
-                metrics["avg_word_f1"],
+                cfg["display_name"] + " (fine-tuned)",
+                m["accuracy"],
+                m["prec_macro"],
+                m["prec_weighted"],
+                m["rec_macro"],
+                m["rec_weighted"],
+                m["f1_macro"],
+                m["f1_weighted"],
+                m["exact_match_acc"],
+                m["avg_partial"],
+                m["avg_word_f1"],
             ],
         })
-        metrics_path = out_dir / "base_model_metrics_summary.csv"
+        metrics_path = out_dir / "metrics_summary.csv"
         metrics_df.to_csv(metrics_path, index=False)
         log.info(f"Metrics summary saved     : {metrics_path}")
 
-        log.info("Sample results (first 10):")
-        log.info(
-            "\n" + results_df[["true_label", "predicted_label", "correct", "f1_score"]]
-            .head(10).to_string(index=False)
-        )
-
-    # ── Figure 1: Overall + Macro vs Weighted bar charts ─────────────────────
+    # ── Figure 1: Metrics bar charts ─────────────────────────────────────────
     log.info("Creating metrics bar chart...")
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
     fig.suptitle(
-        f"Base Model Evaluation — {cfg['model_name']}",
+        f"Fine-Tuned Model Evaluation — {cfg['display_name']}",
         fontsize=15, fontweight="bold", y=1.02,
     )
 
@@ -778,7 +681,7 @@ def save_outputs(results, y_true, y_pred, unique_labels, conf_mat, metrics,
                      f"{h:.3f}", ha="center", va="bottom", fontsize=9)
 
     plt.tight_layout()
-    fig1_path = out_dir / "base_model_metrics.png"
+    fig1_path = out_dir / "metrics.png"
     plt.savefig(fig1_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     log.info(f"Metrics chart saved       : {fig1_path}")
@@ -794,7 +697,7 @@ def save_outputs(results, y_true, y_pred, unique_labels, conf_mat, metrics,
         cm_sub     = conf_mat[np.ix_(idx, idx)]
         sns.heatmap(cm_sub, annot=True, fmt="d", cmap="Blues",
                     xticklabels=top_labels, yticklabels=top_labels, ax=ax)
-        ax.set_title("Confusion Matrix (Top 20 Labels) — Base Model",
+        ax.set_title(f"Confusion Matrix (Top 20) — {cfg['display_name']} Fine-Tuned",
                      fontsize=14, fontweight="bold", pad=20)
     else:
         row_sums = conf_mat.sum(axis=1, keepdims=True)
@@ -807,7 +710,7 @@ def save_outputs(results, y_true, y_pred, unique_labels, conf_mat, metrics,
         sns.heatmap(cm_norm, annot=annot, fmt="", cmap="Blues",
                     xticklabels=unique_labels, yticklabels=unique_labels,
                     ax=ax, vmin=0, vmax=1)
-        ax.set_title("Confusion Matrix — Base Model (row-normalised)",
+        ax.set_title(f"Confusion Matrix — {cfg['display_name']} Fine-Tuned (row-normalised)",
                      fontsize=14, fontweight="bold", pad=20)
 
     ax.set_xlabel("Predicted Label", fontsize=12, fontweight="bold")
@@ -815,21 +718,24 @@ def save_outputs(results, y_true, y_pred, unique_labels, conf_mat, metrics,
     plt.xticks(rotation=45, ha="right")
     plt.yticks(rotation=0)
     plt.tight_layout()
-    fig2_path = out_dir / "base_model_confusion_matrix.png"
+    fig2_path = out_dir / "confusion_matrix.png"
     plt.savefig(fig2_path, dpi=150, bbox_inches="tight")
     plt.close(fig2)
     log.info(f"Confusion matrix saved    : {fig2_path}")
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# SECTION 11 — FINAL SUMMARY
+# ══════════════════════════════════════════════════════════════════════════════
+
 def print_final_summary(metrics, eval_set, elapsed, cfg, log):
     m = metrics
     log.info("=" * 70)
-    log.info("FINAL EVALUATION SUMMARY — BASE MODEL")
+    log.info("FINAL EVALUATION SUMMARY — FINE-TUNED MODEL")
     log.info("=" * 70)
-    log.info(f"  Model              : {cfg['model_name']}  (base — no fine-tuning)")
-    log.info(f"  Display name       : {cfg['display_name']}")
+    log.info(f"  Model              : {cfg['display_name']}  (fine-tuned from {MODEL_REGISTRY[cfg['model_key']]['model_id']})")
+    log.info(f"  Model path         : {cfg['model_path']}")
     log.info(f"  Results folder     : {cfg['output_dir']}")
-    log.info(f"  Inference engine   : vLLM  (tensor_parallel_size={cfg['tensor_parallel_size']})")
     log.info(f"  Samples            : {len(eval_set):,}")
     log.info(f"  Time               : {elapsed / 60:.2f} min  ({elapsed / len(eval_set):.2f} sec/example)")
     log.info("")
@@ -847,69 +753,48 @@ def print_final_summary(metrics, eval_set, elapsed, cfg, log):
     log.info(f"    Avg Partial Match    : {m['avg_partial']:.4f}")
     log.info(f"    Avg Word-level F1    : {m['avg_word_f1']:.4f}")
     log.info("")
-    log.info("  Compare with Fine-Tune/metrics.py to measure the fine-tuning gain.")
+    log.info("  Compare with Base-LLM-Evaluation/results/ to measure fine-tuning gain.")
     log.info("=" * 70)
     log.info("Done.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION 6 — ARGUMENT PARSING
+# SECTION 12 — ARGUMENT PARSING & MAIN
 # ══════════════════════════════════════════════════════════════════════════════
 
 def parse_args():
     p = argparse.ArgumentParser(
-        description="Evaluate a base LLM on the MITRE ATT&CK dataset "
-                    "using vLLM offline batch inference on NVIDIA GPUs."
+        description="Evaluate a fine-tuned model on the MITRE ATT&CK dataset."
     )
-    p.add_argument("--model",                   default="qwen",
+    p.add_argument("--model",             required=True,
                    choices=list(MODEL_REGISTRY.keys()),
-                   help="Which model to evaluate: qwen | llama | phi (default: qwen)")
-    p.add_argument("--model-name",              default=None,
-                   help="Override HuggingFace model ID (use instead of --model for custom IDs)")
-    p.add_argument("--data-path",               default=None,
-                   help="Local directory containing the JSONL split files "
-                        "(skips Kaggle download when provided)")
-    p.add_argument("--splits",                  default=None, nargs="+",
+                   help="Model family: qwen | llama | phi")
+    p.add_argument("--model-path",        required=True,
+                   help="Path to fine-tuned model / LoRA adapters (output of fine_tune.py)")
+    p.add_argument("--data-path",         default=None,
+                   help="Local directory with JSONL splits (skips Kaggle download)")
+    p.add_argument("--splits",            default=None, nargs="+",
                    choices=["train", "val", "test"],
-                   help="Which splits to evaluate, e.g. --splits test val train "
-                        "(default: test)")
-    p.add_argument("--eval-limit",              default=None,
+                   help="Splits to evaluate (default: test)")
+    p.add_argument("--eval-limit",        default=None,
                    help="Max samples; pass 'None' for the full set (default: 2000)")
-    p.add_argument("--suspicious-ratio",        default=None, type=float,
-                   help="Fraction of suspicious samples in the eval set (default: 0.30)")
-    p.add_argument("--max-new-tokens",          default=None, type=int,
-                   help="Max tokens to generate per response (default: 512)")
-    p.add_argument("--temperature",             default=None, type=float,
-                   help="Sampling temperature (default: 0.7)")
-    p.add_argument("--tensor-parallel-size",    default=None, type=int,
-                   help="Number of GPUs for tensor parallelism (default: 4)")
-    p.add_argument("--gpu-memory-utilization",  default=None, type=float,
-                   help="Fraction of VRAM vLLM may use per GPU (default: 0.90)")
-    p.add_argument("--dtype",                   default=None,
-                   choices=["float16", "bfloat16", "float32"],
-                   help="Model weight dtype (default: bfloat16)")
-    p.add_argument("--output-dir",              default=None,
-                   help="Directory for all output files (default: current dir)")
-    p.add_argument("--no-save",                 action="store_true",
-                   help="Skip saving CSV output files")
+    p.add_argument("--suspicious-ratio",  default=None, type=float,
+                   help="Fraction of suspicious samples (default: 0.30)")
+    p.add_argument("--output-dir",        default=None,
+                   help="Where to write results (default: results/{ModelName})")
+    p.add_argument("--no-save",           action="store_true",
+                   help="Print metrics only, skip CSV/PNG output")
     return p.parse_args()
 
 
 def apply_args(cfg: dict, args) -> dict:
-    """Merge CLI overrides into CONFIG, resolving model registry first."""
-    # ── 1. Apply model registry (--model sets model_id, display_name, dtype, etc.) ──
     reg = MODEL_REGISTRY[args.model]
     cfg["model_key"]    = args.model
     cfg["model_name"]   = reg["model_id"]
     cfg["display_name"] = reg["display_name"]
-    cfg["dtype"]        = reg["dtype"]
+    cfg["model_path"]   = args.model_path
 
-    # ── 2. --model-name overrides the HF model ID from the registry ──
-    if args.model_name:
-        cfg["model_name"] = args.model_name
-
-    # ── 3. Auto-set output_dir to results/{display_name}/ (before --output-dir override) ──
-    cfg["output_dir"] = os.path.join("results", cfg["display_name"])
+    cfg["output_dir"] = args.output_dir or os.path.join("results", reg["display_name"])
 
     if args.data_path:
         cfg["data_path"] = args.data_path
@@ -919,26 +804,10 @@ def apply_args(cfg: dict, args) -> dict:
         cfg["eval_limit"] = None if args.eval_limit.lower() == "none" else int(args.eval_limit)
     if args.suspicious_ratio is not None:
         cfg["suspicious_ratio"] = args.suspicious_ratio
-    if args.max_new_tokens is not None:
-        cfg["max_new_tokens"] = args.max_new_tokens
-    if args.temperature is not None:
-        cfg["temperature"] = args.temperature
-    if args.tensor_parallel_size is not None:
-        cfg["tensor_parallel_size"] = args.tensor_parallel_size
-    if args.gpu_memory_utilization is not None:
-        cfg["gpu_memory_utilization"] = args.gpu_memory_utilization
-    if args.dtype is not None:
-        cfg["dtype"] = args.dtype
-    if args.output_dir:
-        cfg["output_dir"] = args.output_dir
     if args.no_save:
         cfg["save_results"] = False
     return cfg
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 7 — MAIN ENTRY POINT
-# ══════════════════════════════════════════════════════════════════════════════
 
 def main():
     args = parse_args()
@@ -947,8 +816,8 @@ def main():
     Path(cfg["output_dir"]).mkdir(parents=True, exist_ok=True)
 
     log = setup_logging(cfg["output_dir"])
-    log.info(f"PID {os.getpid()} — base_model_eval.py starting")
-    log.info(f"Model        : {cfg['display_name']}  ({cfg['model_name']})")
+    log.info(f"PID {os.getpid()} — metrics.py starting")
+    log.info(f"Model        : {cfg['display_name']}  ({cfg['model_path']})")
     log.info(f"Output dir   : {cfg['output_dir']}")
     log.info(f"Python {sys.version.split()[0]}  |  cwd: {os.getcwd()}")
 
@@ -959,15 +828,18 @@ def main():
         log.info(f"  {k:<28}: {v}")
 
     try:
-        llm                            = load_model(cfg, log)
-        dataset                        = load_data(cfg, log)
-        eval_set                       = build_eval_set(dataset, cfg, log)
-        predictions, expected, elapsed = run_inference(eval_set, llm, cfg, log)
-        results, y_true, y_pred, unique_labels, conf_mat, metrics = compute_metrics(
-            predictions, expected, eval_set, elapsed, cfg, log
+        model, tokenizer = load_model_and_tokenizer(cfg, log)
+        dataset          = load_data(cfg, log)
+        eval_set         = build_eval_set(dataset, cfg, log)
+
+        results, exact_total, partial_scores, wf1_scores, elapsed = run_evaluation(
+            eval_set, model, tokenizer, cfg, log
+        )
+        metrics, y_true, y_pred, unique_labels, conf_mat = compute_metrics(
+            results, exact_total, partial_scores, wf1_scores, elapsed, cfg, log
         )
         save_outputs(results, y_true, y_pred, unique_labels, conf_mat, metrics,
-                     elapsed, eval_set, cfg, log)
+                     elapsed, cfg, log)
         print_final_summary(metrics, eval_set, elapsed, cfg, log)
 
     except Exception:
