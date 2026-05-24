@@ -1,8 +1,18 @@
 # Base LLM Evaluation
 
-Evaluates **Qwen/Qwen2.5-1.5B-Instruct** (the base model, **no LoRA adapters**) on the same
-test set and with the same metrics as `Fine-Tune/metrics.ipynb`, so the two sets of numbers
-can be directly compared.
+Evaluates base models (**no LoRA adapters**) on the MITRE ATT&CK dataset with the same
+metrics as `Fine-Tune/metrics.py`, so base vs fine-tuned numbers are directly comparable.
+
+**Supported models** (select with `--model`):
+
+| Alias | Model | VRAM (bfloat16) |
+|---|---|---|
+| `qwen` | `Qwen/Qwen2.5-1.5B-Instruct` | ~3 GB |
+| `llama` | `meta-llama/Llama-3.2-3B-Instruct` | ~6 GB |
+| `phi` | `microsoft/Phi-4-mini-instruct` | ~8 GB |
+
+Each model's **native chat template** is applied automatically. Results are written to
+`results/{ModelName}/` so all three studies sit side-by-side.
 
 ---
 
@@ -22,17 +32,18 @@ can be directly compared.
 
 ## Why a Separate Folder?
 
-`Fine-Tune/metrics.ipynb` loads the fine-tuned model (LoRA adapters).  
+`Fine-Tune/metrics.py` loads the fine-tuned model (LoRA adapters) and runs inference
+sequentially with Transformers.  
 This script loads the **raw base model** from HuggingFace and runs **vLLM offline batch
 inference** — all prompts submitted in one `llm.generate()` call, processed in parallel
 across all available GPUs.
 
-| Aspect | `Fine-Tune/metrics.ipynb` | `base_model_eval.py` |
+| Aspect | `Fine-Tune/metrics.py` | `base_model_eval.py` |
 |---|---|---|
 | Model | Fine-tuned (LoRA adapters) | Base model only |
-| Inference | Transformers sequential loop | **vLLM offline batch** |
-| Execution | Interactive Kaggle notebook | Headless script / `nohup` |
-| Prompt format | Identical | Identical |
+| Inference | Transformers sequential | **vLLM offline batch** |
+| Execution | Headless script / `nohup` | Headless script / `nohup` |
+| Chat template | Per-model (native) | Per-model (native) |
 | Metrics | Identical | Identical |
 | Output files | `evaluation_results.csv` | `base_model_evaluation_results.csv` |
 
@@ -104,33 +115,32 @@ tail -f base_eval_run.log
 ### CLI overrides (no need to edit the file)
 
 ```bash
-# Default — downloads test split from Kaggle, evaluates 2 000 samples
-python base_model_eval.py
+# Qwen2.5-1.5B — test split, 2 000 samples (default)
+python base_model_eval.py --model qwen
 
-# Full test set, all 4 GPUs
-python base_model_eval.py --eval-limit None --tensor-parallel-size 4
+# Llama-3.2-3B — full test set, all 4 GPUs
+python base_model_eval.py --model llama --eval-limit None
 
-# Evaluate on ALL splits (train + val + test) combined
-python base_model_eval.py --splits train val test --eval-limit None
+# Phi-4-mini — background run
+nohup python base_model_eval.py --model phi --eval-limit None \
+    > results/Phi-4-mini/eval.log 2>&1 &
 
-# Evaluate on val split only
-python base_model_eval.py --splits val
+# All splits combined
+python base_model_eval.py --model llama --splits train val test --eval-limit None
 
-# Use locally cached data instead of downloading from Kaggle
-python base_model_eval.py --data-path /path/to/train-test-val
+# Local data (skips Kaggle download)
+python base_model_eval.py --model phi --data-path /path/to/train-test-val
 
-# Quick smoke-test on 500 samples using 2 GPUs
-python base_model_eval.py --eval-limit 500 --tensor-parallel-size 2
-
-# Custom output directory; skip saving CSVs
-python base_model_eval.py --output-dir ./results --no-save
+# Smoke-test (50 samples, 1 GPU)
+python base_model_eval.py --model llama --eval-limit 50 --tensor-parallel-size 1 --no-save
 ```
 
 ### All available flags
 
 | Flag | Default | Description |
 |---|---|---|
-| `--model-name` | `Qwen/Qwen2.5-1.5B-Instruct` | HuggingFace model ID |
+| `--model` | `qwen` | Model to evaluate: `qwen` \| `llama` \| `phi` |
+| `--model-name` | *(from registry)* | Override HuggingFace model ID |
 | `--data-path` | *(Kaggle download)* | Local directory with JSONL splits — skips Kaggle download |
 | `--splits` | `test` | One or more of `train val test` to evaluate |
 | `--eval-limit` | `2000` | Number of samples; `None` = full set |
@@ -140,8 +150,8 @@ python base_model_eval.py --output-dir ./results --no-save
 | `--tensor-parallel-size` | `4` | GPUs used for tensor parallelism |
 | `--gpu-memory-utilization` | `0.90` | Fraction of VRAM vLLM may use per GPU |
 | `--dtype` | `bfloat16` | `float16`, `bfloat16`, or `float32` |
-| `--output-dir` | `.` | Where to write all output files |
-| `--no-save` | off | Disable CSV saving |
+| `--output-dir` | `results/{ModelName}` | Override the auto-named output folder |
+| `--no-save` | off | Disable CSV/PNG saving |
 
 ---
 
@@ -158,10 +168,10 @@ The script runs these steps sequentially and logs each one with a timestamp:
 
 | Step | What happens |
 |---|---|
-| 1 | Initialise `vllm.LLM` with `Qwen/Qwen2.5-1.5B-Instruct` across `tensor_parallel_size` GPUs |
+| 1 | Initialise `vllm.LLM` with the selected model across `tensor_parallel_size` GPUs |
 | 2 | Download `abirashab/train-test-val` via `kagglehub` (cached after first run), or read from `--data-path`; load and concatenate all requested `--splits` |
-| 3 | Stratified sampling (identical logic to `Fine-Tune/metrics.ipynb`) |
-| 4 | Build prompt list — same format as training data |
+| 3 | Stratified sampling (identical logic to `Fine-Tune/metrics.py`) |
+| 4 | Build prompt list applying the model's native chat template |
 | 5 | **Single-call batch inference** via `llm.generate()` (vLLM handles continuous batching) |
 | 6 | Compute per-example metrics (exact match, partial match, word-level F1) |
 | 7 | Compute classification metrics (accuracy, precision/recall/F1 macro+weighted) |
@@ -171,7 +181,7 @@ The script runs these steps sequentially and logs each one with a timestamp:
 
 ## Output Files
 
-All files are written to `--output-dir` (default: current directory).
+All files are written to `results/{ModelName}/` (auto-named) or `--output-dir` if overridden.
 
 | File | Description |
 |---|---|
@@ -185,7 +195,7 @@ All files are written to `--output-dir` (default: current directory).
 
 ## Metrics Computed
 
-All metrics are identical to `Fine-Tune/metrics.ipynb`:
+All metrics are identical to `Fine-Tune/metrics.py`:
 
 **Classification (Normal vs Suspicious)**
 - Accuracy
@@ -202,16 +212,31 @@ All metrics are identical to `Fine-Tune/metrics.ipynb`:
 
 ## Comparing Base vs Fine-Tuned
 
-After both evaluations are done, compare the metric CSVs:
+After running both `base_model_eval.py` and `Fine-Tune/metrics.py` for a given model,
+compare the CSVs side-by-side:
 
 ```python
 import pandas as pd
 
-base  = pd.read_csv("Base-LLM-Evaluation/base_model_metrics_summary.csv")
-tuned = pd.read_csv("Fine-Tune/metrics_summary.csv")   # adjust path as needed
+model = "Llama-3.2-3B"   # or Qwen2.5-1.5B, Phi-4-mini
+
+base  = pd.read_csv(f"Base-LLM-Evaluation/results/{model}/base_model_metrics_summary.csv")
+tuned = pd.read_csv(f"Fine-Tune/results/{model}/metrics_summary.csv")
 
 comp = base.merge(tuned, on="Metric", suffixes=("_base", "_finetuned"))
 print(comp.to_string(index=False))
+```
+
+To compare all three models at once:
+
+```python
+import pandas as pd, glob
+
+dfs = {
+    p.split("/")[-2]: pd.read_csv(p)
+    for p in glob.glob("Base-LLM-Evaluation/results/*/base_model_metrics_summary.csv")
+}
+pd.concat(dfs, axis=1).to_string()
 ```
 
 ---
@@ -223,7 +248,8 @@ Run `pip install -r requirements.txt`. vLLM requires Linux + CUDA; it does **not
 
 **CUDA out of memory during `LLM()` init**  
 Reduce `--gpu-memory-utilization 0.80` or lower `--tensor-parallel-size`.  
-A 1.5 B model in bfloat16 uses ~3 GB; OOM here usually means another process is already holding VRAM.
+Approximate VRAM: Qwen ~3 GB, Llama ~6 GB, Phi ~8 GB (bfloat16 + KV-cache).  
+OOM usually means another process is already holding VRAM.
 
 **All predictions are `UNKNOWN`**  
 The base model may not follow the training-data output format.  

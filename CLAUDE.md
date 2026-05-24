@@ -19,8 +19,8 @@ Mitre-Dataset/
 ├── Data-preparation/
 │   ├── v1/                   # Legacy pipeline
 │   └── v2/                   # Active pipeline: extract → clean → chunk → train split
-├── Fine-Tune/                # Kaggle notebooks for LoRA fine-tuning and evaluation on Qwen2.5-1.5B
-├── Base-LLM-Evaluation/      # Headless Python script: base model evaluation (vLLM offline batch on 4× Ada 6000, same metrics as Fine-Tune)
+├── Fine-Tune/                # LoRA fine-tuning + evaluation — Python scripts (fine_tune.py, metrics.py) + Kaggle notebooks; supports Qwen2.5-1.5B, Llama-3.2-3B, Phi-4-mini
+├── Base-LLM-Evaluation/      # Headless Python script: base model evaluation (vLLM offline batch on 4× Ada 6000); supports Qwen2.5-1.5B, Llama-3.2-3B, Phi-4-mini
 ├── mitre-attack-analyzer/    # Full-stack inference app (FastAPI + React)
 ├── classifiers/              # Jupyter notebooks for exploratory classifiers
 └── docs/                     # Research documentation and attack scenario descriptions
@@ -34,7 +34,7 @@ The end-to-end pipeline to go from raw logs to a fine-tuned model:
 2. **Clean logs** (`Log Cleaner/main.py`) — parse and normalize raw logs from Google Drive
 3. **Annotate** (`Annotate-attack-logs/main.py`) — label logs as suspicious/normal with MITRE techniques
 4. **Prepare data** (`Data-preparation/v2/`) — extract → deduplicate → chunk (7 logs/chunk) → merge & balance → train/val/test split (70/15/15)
-5. **Fine-tune** (`Fine-Tune/fine-tune.ipynb`) — LoRA on Qwen/Qwen2.5-1.5B-Instruct on Kaggle (2× Tesla T4)
+5. **Fine-tune** (`Fine-Tune/fine_tune.py`) — LoRA fine-tuning; supports Qwen/Qwen2.5-1.5B-Instruct, Llama-3.2-3B-Instruct, Phi-4-mini-instruct; Kaggle notebooks kept as reference
 6. **Serve** (`mitre-attack-analyzer/`) — FastAPI backend loads the fine-tuned model; React frontend for log submission and analysis
 
 ## Sub-system Commands
@@ -103,31 +103,74 @@ python main.py
 cd Base-LLM-Evaluation
 pip install -r requirements.txt   # vLLM + datasets + kagglehub + sklearn + matplotlib
 
-# Data is downloaded automatically from Kaggle (abirashab/train-test-val).
-# Requires ~/.kaggle/kaggle.json — or pass --data-path to use local files.
+# Data downloaded automatically from Kaggle (abirashab/train-test-val).
+# Requires ~/.kaggle/kaggle.json — or pass --data-path for local files.
+# Results are written to results/{ModelName}/ automatically.
 
-# Full test set — all 4 GPUs (recommended)
-python base_model_eval.py --eval-limit None --output-dir ./results
+# Qwen2.5-1.5B (default)
+python base_model_eval.py --model qwen --eval-limit None
 
-# Evaluate on all splits (train + val + test) combined
-python base_model_eval.py --splits train val test --eval-limit None --output-dir ./results
+# Llama-3.2-3B
+python base_model_eval.py --model llama --eval-limit None
 
-# Background run with live log tail
-nohup python base_model_eval.py --eval-limit None --output-dir ./results \
-    > results/eval.log 2>&1 &
-tail -f results/base_eval_run.log
+# Phi-4-mini
+python base_model_eval.py --model phi --eval-limit None
 
-# Smoke-test on 500 samples
-python base_model_eval.py --eval-limit 500 --tensor-parallel-size 4
+# Background run
+nohup python base_model_eval.py --model llama --eval-limit None \
+    > results/Llama-3.2-3B/eval.log 2>&1 &
+
+# Smoke-test (50 samples, 1 GPU)
+python base_model_eval.py --model phi --eval-limit 50 --tensor-parallel-size 1 --no-save
 
 # Key overrides
+#   --model qwen|llama|phi      model to evaluate (required)
 #   --splits train val test     which splits to load (default: test)
 #   --tensor-parallel-size N    number of GPUs (default: 4)
 #   --gpu-memory-utilization F  VRAM fraction per GPU (default: 0.90)
 #   --dtype bfloat16|float16    weight dtype (default: bfloat16)
 #   --data-path /path/to/dir    local directory with JSONL files (skips Kaggle)
-#   --output-dir ./results      where to write CSVs, PNGs, log
 #   --no-save                   print metrics only, skip CSV output
+```
+
+### Fine-Tune (`Fine-Tune/`)
+```bash
+cd Fine-Tune
+pip install -r requirements.txt   # transformers + peft + accelerate + kagglehub
+
+# LoRA fine-tuning — data downloaded from Kaggle automatically
+python fine_tune.py --model qwen    # → models/Qwen2.5-1.5B/
+python fine_tune.py --model llama   # → models/Llama-3.2-3B/
+python fine_tune.py --model phi     # → models/Phi-4-mini/
+
+# Full dataset (default uses 40 % sample)
+python fine_tune.py --model llama --sample-percentage 1.0
+
+# Local data, custom output, more epochs
+python fine_tune.py --model phi --data-path /data/train-test-val \
+    --output-dir /ckpts/phi --final-model-dir /models/phi --epochs 5
+
+# Smoke-test (1 % data, 1 epoch)
+python fine_tune.py --model llama --sample-percentage 0.01 --epochs 1 --no-resume
+
+# Evaluate a fine-tuned model
+python metrics.py --model llama --model-path models/Llama-3.2-3B
+python metrics.py --model phi   --model-path models/Phi-4-mini --eval-limit None
+
+# Key overrides for fine_tune.py
+#   --model qwen|llama|phi          model to fine-tune (required)
+#   --sample-percentage 0.4         fraction of training data (default: 0.4)
+#   --epochs N                      training epochs (default: 3)
+#   --lr F                          learning rate (default: 2e-4)
+#   --lora-r N                      LoRA rank (default: 16)
+#   --no-resume                     start fresh, ignore existing checkpoints
+
+# Key overrides for metrics.py
+#   --model qwen|llama|phi          model family (required)
+#   --model-path /path/to/adapters  fine-tuned model path (required)
+#   --eval-limit N|None             sample cap (default: 2000)
+#   --splits train val test         splits to evaluate (default: test)
+#   --no-save                       print metrics only
 ```
 
 ### Automated Log Collection (`Automated Log/`)
@@ -148,12 +191,16 @@ python main.py
 - **Models** (`app/models/`) — `LogAnalysis` and `SessionChunk` Beanie documents
 - ML model loads once at startup via `lifespan`; first run downloads ~3 GB base model to HuggingFace cache
 
-### Fine-Tuning (Kaggle, `Fine-Tune/fine-tune.ipynb`)
-- Base model: `Qwen/Qwen2.5-1.5B-Instruct` with LoRA (r=16, alpha=32, targets: q/k/v/o_proj)
-- Training data: instruction-tuning format — `instruction` + `input` (JSON log chunk) → `output` (Status + MITRE techniques + Reason)
-- Prompt masking: only the output tokens contribute to loss
-- Dataset: ~90K train / 12K val examples (JSONL); stored on Kaggle as `abirashab/train-test-val`
-- All CONFIG in Cell 4 of the notebook is the single source of truth for hyperparameters
+### Fine-Tuning (`Fine-Tune/`)
+- **Models supported:** `Qwen/Qwen2.5-1.5B-Instruct`, `meta-llama/Llama-3.2-3B-Instruct`, `microsoft/Phi-4-mini-instruct`
+- **Scripts:** `fine_tune.py` (training) + `metrics.py` (evaluation); Kaggle notebooks kept as reference
+- LoRA config: r=16, alpha=32, targets: q/k/v/o_proj, dropout=0.05
+- Each model uses its **native chat template** — Llama-3 header tokens, Phi-4 `<|user|>/<|end|>` tokens, Qwen raw text
+- Prompt masking: prompt tokens set to -100 so loss is computed on output tokens only
+- Dataset: ~90K train / 12K val / 12K test (JSONL); downloaded from Kaggle as `abirashab/train-test-val`
+- Training hyperparameters: lr=2e-4, batch=1, grad_accum=4 (effective=4), epochs=3, cosine scheduler, AdamW, early stopping (patience=5)
+- Checkpoints saved to `checkpoints/{ModelName}/`; final model to `models/{ModelName}/`
+- Evaluation results saved to `results/{ModelName}/` (CSV + PNG charts)
 
 ### Training Data Format
 Every training example is an instruction-tuning triple:
@@ -175,8 +222,9 @@ Each sub-system has its own `.env`. Key variables:
 
 ## Development Notes
 
-- `Base-LLM-Evaluation/base_model_eval.py` evaluates the **base** (non-fine-tuned) model using vLLM offline batch inference on 4 × NVIDIA Ada 6000 GPUs; outputs are directly comparable to `Fine-Tune/metrics.ipynb`. Dataset is downloaded automatically from Kaggle (`abirashab/train-test-val`) via `kagglehub`; use `--splits train val test` to evaluate across all splits, or `--data-path` to point at local files.
-- The `Fine-Tune/metrics.ipynb` notebook evaluates the fine-tuned model against the test split
+- `Base-LLM-Evaluation/base_model_eval.py` evaluates the **base** (non-fine-tuned) model using vLLM offline batch inference on 4 × NVIDIA Ada 6000 GPUs; supports Qwen2.5-1.5B, Llama-3.2-3B, Phi-4-mini via `--model`; each model's native chat template is applied automatically; results land in `results/{ModelName}/` for side-by-side comparison
+- `Fine-Tune/fine_tune.py` fine-tunes any supported model with LoRA; `Fine-Tune/metrics.py` evaluates the fine-tuned adapters — both use the same `MODEL_REGISTRY` and chat template logic as `base_model_eval.py` so metrics are directly comparable
+- Kaggle notebooks `fine-tune.ipynb` and `metrics.ipynb` are kept as-is for Kaggle reference (Qwen only)
 - `mitre-attack-analyzer/utils/extract_test_data.py` extracts test samples from the dataset; `mitre-attack-analyzer/data/` holds pre-extracted test JSON files with an `answer_key.json`
 - Log chunks use `session_id` (timestamp format `YYYYMMDD_HHMMSS`) as the grouping key throughout — session integrity is preserved across all pipeline stages
 - The `attac-scenarios` app manages ~60,000 pre-generated MITRE technique combination scenarios stored in MongoDB
