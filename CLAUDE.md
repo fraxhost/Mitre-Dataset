@@ -101,10 +101,16 @@ python main.py
 ### Base LLM Evaluation (`Base-LLM-Evaluation/`)
 ```bash
 cd Base-LLM-Evaluation
-pip install -r requirements.txt   # vLLM + datasets + sklearn + matplotlib
+pip install -r requirements.txt   # vLLM + datasets + kagglehub + sklearn + matplotlib
+
+# Data is downloaded automatically from Kaggle (abirashab/train-test-val).
+# Requires ~/.kaggle/kaggle.json — or pass --data-path to use local files.
 
 # Full test set — all 4 GPUs (recommended)
 python base_model_eval.py --eval-limit None --output-dir ./results
+
+# Evaluate on all splits (train + val + test) combined
+python base_model_eval.py --splits train val test --eval-limit None --output-dir ./results
 
 # Background run with live log tail
 nohup python base_model_eval.py --eval-limit None --output-dir ./results \
@@ -115,10 +121,11 @@ tail -f results/base_eval_run.log
 python base_model_eval.py --eval-limit 500 --tensor-parallel-size 4
 
 # Key overrides
+#   --splits train val test     which splits to load (default: test)
 #   --tensor-parallel-size N    number of GPUs (default: 4)
 #   --gpu-memory-utilization F  VRAM fraction per GPU (default: 0.90)
 #   --dtype bfloat16|float16    weight dtype (default: bfloat16)
-#   --data-path /path/to/dir    directory containing test.jsonl
+#   --data-path /path/to/dir    local directory with JSONL files (skips Kaggle)
 #   --output-dir ./results      where to write CSVs, PNGs, log
 #   --no-save                   print metrics only, skip CSV output
 ```
@@ -168,7 +175,7 @@ Each sub-system has its own `.env`. Key variables:
 
 ## Development Notes
 
-- `Base-LLM-Evaluation/base_model_eval.py` evaluates the **base** (non-fine-tuned) model using vLLM offline batch inference on 4 × NVIDIA Ada 6000 GPUs; outputs are directly comparable to `Fine-Tune/metrics.ipynb`
+- `Base-LLM-Evaluation/base_model_eval.py` evaluates the **base** (non-fine-tuned) model using vLLM offline batch inference on 4 × NVIDIA Ada 6000 GPUs; outputs are directly comparable to `Fine-Tune/metrics.ipynb`. Dataset is downloaded automatically from Kaggle (`abirashab/train-test-val`) via `kagglehub`; use `--splits train val test` to evaluate across all splits, or `--data-path` to point at local files.
 - The `Fine-Tune/metrics.ipynb` notebook evaluates the fine-tuned model against the test split
 - `mitre-attack-analyzer/utils/extract_test_data.py` extracts test samples from the dataset; `mitre-attack-analyzer/data/` holds pre-extracted test JSON files with an `answer_key.json`
 - Log chunks use `session_id` (timestamp format `YYYYMMDD_HHMMSS`) as the grouping key throughout — session integrity is preserved across all pipeline stages

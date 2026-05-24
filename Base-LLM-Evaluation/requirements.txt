@@ -7,6 +7,7 @@ vllm>=0.6.0
 
 # Data loading
 datasets>=2.19.0
+kagglehub>=0.2.0      # downloads Kaggle datasets (abirashab/train-test-val)
 
 # Numerics / plotting
 numpy>=1.26.0

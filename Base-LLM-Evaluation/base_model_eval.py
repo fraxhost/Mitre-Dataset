@@ -30,6 +30,14 @@ Usage
   python base_model_eval.py --eval-limit 500 --tensor-parallel-size 4
   python base_model_eval.py --eval-limit None          # full test set
   python base_model_eval.py --output-dir ./results
+
+  # Data source — downloads from Kaggle (abirashab/train-test-val) by default.
+  # Use --data-path to point at a local directory and skip the download.
+  python base_model_eval.py --data-path /path/to/train-test-val
+
+  # Evaluate on a specific split or combination of splits:
+  python base_model_eval.py --splits test           # default: test only
+  python base_model_eval.py --splits train val test  # all three splits combined
 """
 
 # ── Matplotlib must switch to non-interactive backend BEFORE any other import ──
@@ -71,9 +79,20 @@ CONFIG = {
     # ── Model ─────────────────────────────────────────────────────────────────
     "model_name": "Qwen/Qwen2.5-1.5B-Instruct",   # base model, no LoRA adapters
 
-    # ── Data paths ────────────────────────────────────────────────────────────
-    "data_path": "./test_data",
-    "test_file": "test.jsonl",
+    # ── Data source ───────────────────────────────────────────────────────────
+    # The dataset lives on Kaggle as abirashab/train-test-val.
+    # kagglehub downloads it automatically on first run and caches it locally.
+    # Override with --data-path if you already have the files on disk.
+    "kaggle_dataset": "abirashab/train-test-val",
+    "data_path":      None,          # set by --data-path to skip Kaggle download
+
+    # splits: one or more of "train", "val", "test".
+    # All listed files are loaded and concatenated into one eval pool so that
+    # stratified sampling and metrics cover the full combined set.
+    "splits":      ["test"],
+    "train_file":  "train.jsonl",
+    "val_file":    "val.jsonl",
+    "test_file":   "test.jsonl",
 
     # ── Evaluation ────────────────────────────────────────────────────────────
     "eval_limit": 2000,          # set to None to evaluate the full test set
@@ -254,22 +273,75 @@ def load_model(cfg: dict, log: logging.Logger) -> LLM:
     return llm
 
 
-def load_data(cfg: dict, log: logging.Logger):
-    test_file_path = os.path.join(cfg["data_path"], cfg["test_file"])
+def resolve_data_dir(cfg: dict, log: logging.Logger) -> str:
+    """
+    Return the directory that contains the JSONL split files.
 
-    log.info("=" * 70)
-    log.info("STEP 2 — Loading test dataset")
-    log.info("=" * 70)
-    log.info(f"Path: {test_file_path}")
+    Priority:
+      1. --data-path CLI flag (user already has files locally)
+      2. kagglehub download of cfg["kaggle_dataset"]
+    """
+    if cfg["data_path"]:
+        data_dir = cfg["data_path"]
+        log.info(f"Using local data directory: {data_dir}")
+        return data_dir
 
-    if not os.path.exists(test_file_path):
-        raise FileNotFoundError(
-            f"Test file not found: {test_file_path}\n"
-            "Set --data-path to the directory containing test.jsonl."
+    try:
+        import kagglehub
+    except ImportError:
+        raise ImportError(
+            "kagglehub is not installed. Run: pip install kagglehub\n"
+            "Or provide --data-path to a local directory containing the JSONL files."
         )
 
-    dataset = load_dataset("json", data_files={"test": test_file_path})["test"]
-    log.info(f"Loaded {len(dataset):,} examples.  Columns: {dataset.column_names}")
+    log.info(f"Downloading Kaggle dataset: {cfg['kaggle_dataset']}")
+    log.info("(Cached after first download — subsequent runs are instant.)")
+    data_dir = kagglehub.dataset_download(cfg["kaggle_dataset"])
+    log.info(f"Dataset available at: {data_dir}")
+    return data_dir
+
+
+def load_data(cfg: dict, log: logging.Logger):
+    log.info("=" * 70)
+    log.info("STEP 2 — Loading dataset")
+    log.info("=" * 70)
+
+    split_file_map = {
+        "train": cfg["train_file"],
+        "val":   cfg["val_file"],
+        "test":  cfg["test_file"],
+    }
+
+    data_dir = resolve_data_dir(cfg, log)
+
+    # Collect the requested splits, skipping any whose files are absent
+    data_files = {}
+    for split in cfg["splits"]:
+        fname = split_file_map[split]
+        fpath = os.path.join(data_dir, fname)
+        if not os.path.exists(fpath):
+            log.warning(f"Split file not found, skipping: {fpath}")
+        else:
+            data_files[split] = fpath
+            log.info(f"  {split:5s} → {fpath}")
+
+    if not data_files:
+        raise FileNotFoundError(
+            f"No JSONL files found for splits {cfg['splits']} in: {data_dir}\n"
+            "Check --data-path / --splits, or ensure kagglehub downloaded correctly."
+        )
+
+    raw = load_dataset("json", data_files=data_files)
+
+    # Concatenate all splits into one dataset
+    from datasets import concatenate_datasets
+    parts = [raw[s] for s in data_files]
+    dataset = concatenate_datasets(parts) if len(parts) > 1 else parts[0]
+
+    log.info(
+        f"Loaded splits: {list(data_files.keys())}  —  "
+        f"{len(dataset):,} total examples.  Columns: {dataset.column_names}"
+    )
 
     sample = dataset[0]
     log.info(f"Sample instruction : {sample['instruction'][:100]}")
@@ -722,7 +794,12 @@ def parse_args():
     p.add_argument("--model-name",              default=None,
                    help="HuggingFace model ID (default: Qwen/Qwen2.5-1.5B-Instruct)")
     p.add_argument("--data-path",               default=None,
-                   help="Directory containing test.jsonl")
+                   help="Local directory containing the JSONL split files "
+                        "(skips Kaggle download when provided)")
+    p.add_argument("--splits",                  default=None, nargs="+",
+                   choices=["train", "val", "test"],
+                   help="Which splits to evaluate, e.g. --splits test val train "
+                        "(default: test)")
     p.add_argument("--eval-limit",              default=None,
                    help="Max samples; pass 'None' for the full set (default: 2000)")
     p.add_argument("--suspicious-ratio",        default=None, type=float,
@@ -751,6 +828,8 @@ def apply_args(cfg: dict, args) -> dict:
         cfg["model_name"] = args.model_name
     if args.data_path:
         cfg["data_path"] = args.data_path
+    if args.splits:
+        cfg["splits"] = args.splits
     if args.eval_limit is not None:
         cfg["eval_limit"] = None if args.eval_limit.lower() == "none" else int(args.eval_limit)
     if args.suspicious_ratio is not None:

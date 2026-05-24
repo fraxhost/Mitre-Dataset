@@ -11,8 +11,12 @@ can be directly compared.
 | File | Purpose |
 |---|---|
 | `base_model_eval.py` | **Primary** — headless Python script, run with `nohup` or directly |
-| `requirements.txt` | Python dependencies |
-| `test_data/test.jsonl` | Test split (placed here or override with `--data-path`) |
+| `requirements.txt` | Python dependencies (includes `kagglehub` for automatic data download) |
+
+> **Data source:** the evaluation dataset is downloaded automatically from the Kaggle dataset
+> [`abirashab/train-test-val`](https://www.kaggle.com/datasets/abirashab/train-test-val)
+> via `kagglehub` on first run and cached locally.  
+> Pass `--data-path /local/dir` to use files you already have on disk.
 
 ---
 
@@ -62,6 +66,19 @@ if your driver uses CUDA 11.8 install the matching vLLM wheel instead:
 pip install vllm --extra-index-url https://download.pytorch.org/whl/cu118
 ```
 
+### Kaggle credentials (required for automatic data download)
+
+`kagglehub` reads your Kaggle API key from `~/.kaggle/kaggle.json`.  
+Create one at **kaggle.com → Settings → API → Create New Token**, then:
+
+```bash
+mkdir -p ~/.kaggle
+cp kaggle.json ~/.kaggle/kaggle.json
+chmod 600 ~/.kaggle/kaggle.json
+```
+
+If you already have the JSONL files locally, skip this step and pass `--data-path`.
+
 ---
 
 ## Running the Script
@@ -87,19 +104,26 @@ tail -f base_eval_run.log
 ### CLI overrides (no need to edit the file)
 
 ```bash
+# Default — downloads test split from Kaggle, evaluates 2 000 samples
+python base_model_eval.py
+
 # Full test set, all 4 GPUs
 python base_model_eval.py --eval-limit None --tensor-parallel-size 4
+
+# Evaluate on ALL splits (train + val + test) combined
+python base_model_eval.py --splits train val test --eval-limit None
+
+# Evaluate on val split only
+python base_model_eval.py --splits val
+
+# Use locally cached data instead of downloading from Kaggle
+python base_model_eval.py --data-path /path/to/train-test-val
 
 # Quick smoke-test on 500 samples using 2 GPUs
 python base_model_eval.py --eval-limit 500 --tensor-parallel-size 2
 
-# Custom data path and output directory
-python base_model_eval.py \
-    --data-path /path/to/train-test-val \
-    --output-dir ./results
-
-# Skip saving CSV files (just print metrics)
-python base_model_eval.py --no-save
+# Custom output directory; skip saving CSVs
+python base_model_eval.py --output-dir ./results --no-save
 ```
 
 ### All available flags
@@ -107,7 +131,8 @@ python base_model_eval.py --no-save
 | Flag | Default | Description |
 |---|---|---|
 | `--model-name` | `Qwen/Qwen2.5-1.5B-Instruct` | HuggingFace model ID |
-| `--data-path` | `./test_data` | Directory containing `test.jsonl` |
+| `--data-path` | *(Kaggle download)* | Local directory with JSONL splits — skips Kaggle download |
+| `--splits` | `test` | One or more of `train val test` to evaluate |
 | `--eval-limit` | `2000` | Number of samples; `None` = full set |
 | `--suspicious-ratio` | `0.30` | Fraction of suspicious samples |
 | `--max-new-tokens` | `512` | Max tokens to generate per response |
@@ -134,7 +159,7 @@ The script runs these steps sequentially and logs each one with a timestamp:
 | Step | What happens |
 |---|---|
 | 1 | Initialise `vllm.LLM` with `Qwen/Qwen2.5-1.5B-Instruct` across `tensor_parallel_size` GPUs |
-| 2 | Load `test.jsonl` via HuggingFace `datasets` |
+| 2 | Download `abirashab/train-test-val` via `kagglehub` (cached after first run), or read from `--data-path`; load and concatenate all requested `--splits` |
 | 3 | Stratified sampling (identical logic to `Fine-Tune/metrics.ipynb`) |
 | 4 | Build prompt list — same format as training data |
 | 5 | **Single-call batch inference** via `llm.generate()` (vLLM handles continuous batching) |
@@ -205,6 +230,11 @@ The base model may not follow the training-data output format.
 Check `base_eval_run.log` for sample predictions, then update `extract_status_label()`
 in the script to match the actual output style.
 
-**`test.jsonl` not found**  
-Set `--data-path` to the correct directory, or update `CONFIG["data_path"]` in the script.  
-Default path is `./test_data/test.jsonl` (relative to where you run the script).
+**Kaggle download fails / `401 Unauthorized`**  
+Your `~/.kaggle/kaggle.json` is missing or invalid.  
+Generate a fresh token at kaggle.com → Settings → API → Create New Token, then `chmod 600 ~/.kaggle/kaggle.json`.  
+Alternatively, pass `--data-path` to point directly at a local copy of the JSONL files.
+
+**Split file not found warning**  
+If `kagglehub` downloaded the dataset but a split file is missing (e.g. no `train.jsonl`),
+the script skips that split with a warning and continues with the remaining ones.
