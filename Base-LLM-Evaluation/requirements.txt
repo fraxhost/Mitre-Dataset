@@ -1,0 +1,19 @@
+# Base LLM Evaluation — Python dependencies
+# Requires Python 3.10+ and Linux with CUDA 12.x
+# Install: pip install -r requirements.txt
+
+# Inference engine (CUDA 12.x wheel; for CUDA 11.8 see README)
+vllm>=0.6.0
+
+# Data loading
+datasets>=2.19.0
+
+# Numerics / plotting
+numpy>=1.26.0
+pandas>=2.2.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+scikit-learn>=1.4.0
+
+# Progress bar (used internally by vLLM and datasets)
+tqdm>=4.66.0
