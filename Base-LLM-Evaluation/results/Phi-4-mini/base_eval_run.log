@@ -74,3 +74,202 @@ Analyze this session log chunk and determine if it contains normal or suspicious
 2026-05-25 02:22:29 | INFO     | tensor_parallel_size: 1  |  temp: 0.7  top_p: 0.9  max_new_tokens: 512
 2026-05-25 02:22:29 | INFO     | Stop tokens: ['<|end|>']
 2026-05-25 02:22:29 | INFO     | Submitting all prompts in a single llm.generate() call — vLLM handles continuous batching internally.
+2026-05-25 03:59:25 | INFO     | Inference complete: 96.92 min total  (0.55 sec/example)
+2026-05-25 03:59:25 | INFO     | ======================================================================
+2026-05-25 03:59:25 | INFO     | STEP 6 — Computing per-example metrics
+2026-05-25 03:59:25 | INFO     | ======================================================================
+2026-05-25 03:59:26 | INFO     | ------------------------------------------------------------
+2026-05-25 03:59:26 | INFO     | Example 1/10
+2026-05-25 03:59:26 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 909, "start_time": "2025-09-18T17:40:2...
+2026-05-25 03:59:26 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 03:59:26 | INFO     |   Predicted : The session log provided contains seven network-related events, all occurring at the same timestamp and the same start and end times. The events predo...
+2026-05-25 03:59:26 | INFO     |   Scores    : exact=0  partial=0.333  word_f1=0.131
+2026-05-25 03:59:26 | INFO     | ------------------------------------------------------------
+2026-05-25 03:59:26 | INFO     | Example 2/10
+2026-05-25 03:59:26 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 1668, "start_time": "2025-10-25T11:18:...
+2026-05-25 03:59:26 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 03:59:26 | INFO     |   Predicted : The given session log chunk appears to consist of network traffic records with a focus on Transmission Control Protocol (TCP) communication between tw...
+2026-05-25 03:59:26 | INFO     |   Scores    : exact=0  partial=0.135  word_f1=0.063
+2026-05-25 03:59:26 | INFO     | ------------------------------------------------------------
+2026-05-25 03:59:26 | INFO     | Example 3/10
+2026-05-25 03:59:26 | INFO     |   Input     : {"metadata": {"session_id": "20251025_094500", "chunk_index": 45, "start_time": "2025-10-25T03:45:42...
+2026-05-25 03:59:26 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 03:59:26 | INFO     |   Predicted : The session log chunk provided consists of a series of network events that are recorded within a very short timeframe (less than a second). Here is an...
+2026-05-25 03:59:26 | INFO     |   Scores    : exact=0  partial=0.294  word_f1=0.142
+2026-05-25 03:59:26 | INFO     | ------------------------------------------------------------
+2026-05-25 03:59:26 | INFO     | Example 4/10
+2026-05-25 03:59:26 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 731, "start_time": "2025-10-25T11:09:0...
+2026-05-25 03:59:26 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 03:59:26 | INFO     |   Predicted : Upon analyzing the session log chunk, we can determine if there are any normal or suspicious activities by examining the network events and the contex...
+2026-05-25 03:59:26 | INFO     |   Scores    : exact=0  partial=0.327  word_f1=0.144
+2026-05-25 03:59:26 | INFO     | ------------------------------------------------------------
+2026-05-25 03:59:26 | INFO     | Example 5/10
+2026-05-25 03:59:26 | INFO     |   Input     : {"metadata": {"session_id": "20251026_065700", "chunk_index": 1517, "start_time": "2025-10-26T01:12:...
+2026-05-25 03:59:26 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 03:59:26 | INFO     |   Predicted : The session log chunk provided contains several network-related events that can be analyzed for normalcy or potential suspicious activity. Let's exami...
+2026-05-25 03:59:26 | INFO     |   Scores    : exact=0  partial=0.245  word_f1=0.107
+2026-05-25 03:59:26 | INFO     | ------------------------------------------------------------
+2026-05-25 03:59:26 | INFO     | Example 6/10
+2026-05-25 03:59:26 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 1344, "start_time": "2025-09-18T17:44:...
+2026-05-25 03:59:26 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (5 Network, 2 Process). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard netwo...
+2026-05-25 03:59:26 | INFO     |   Predicted : The provided session log chunk appears to contain normal activity, but let's analyze it step-by-step to ensure we haven't missed any suspicious behavi...
+2026-05-25 03:59:26 | INFO     |   Scores    : exact=0  partial=0.246  word_f1=0.112
+2026-05-25 03:59:26 | INFO     | ------------------------------------------------------------
+2026-05-25 03:59:26 | INFO     | Example 7/10
+2026-05-25 03:59:26 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 56, "start_time": "2025-10-25T11:02:04...
+2026-05-25 03:59:26 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 03:59:26 | INFO     |   Predicted : The session log provided contains a series of network events, including ARP and TCP/IP communications. To determine if any activity is suspicious, I w...
+2026-05-25 03:59:26 | INFO     |   Scores    : exact=0  partial=0.302  word_f1=0.144
+2026-05-25 03:59:26 | INFO     | ------------------------------------------------------------
+2026-05-25 03:59:26 | INFO     | Example 8/10
+2026-05-25 03:59:26 | INFO     |   Input     : {"metadata": {"session_id": "20251026_065700", "chunk_index": 940, "start_time": "2025-10-26T01:05:1...
+2026-05-25 03:59:26 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 03:59:26 | INFO     |   Predicted : The provided session log chunk indicates normal activity related to network communication and DNS queries. Here is a breakdown of the events and why t...
+2026-05-25 03:59:26 | INFO     |   Scores    : exact=0  partial=0.235  word_f1=0.118
+2026-05-25 03:59:26 | INFO     | ------------------------------------------------------------
+2026-05-25 03:59:26 | INFO     | Example 9/10
+2026-05-25 03:59:26 | INFO     |   Input     : {"metadata": {"session_id": "20251025_094500", "chunk_index": 1086, "start_time": "2025-10-25T03:56:...
+2026-05-25 03:59:26 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (6 Network, 1 Process). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard netwo...
+2026-05-25 03:59:26 | INFO     |   Predicted : Based on the provided session log chunk, there are a few suspicious activities that can be identified. Here’s the analysis:
+
+**1. ARP Spoofing:**
+- Th...
+2026-05-25 03:59:26 | INFO     |   Scores    : exact=0  partial=0.148  word_f1=0.080
+2026-05-25 03:59:26 | INFO     | ------------------------------------------------------------
+2026-05-25 03:59:26 | INFO     | Example 10/10
+2026-05-25 03:59:26 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 329, "start_time": "2025-09-18T17:36:3...
+2026-05-25 03:59:26 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 03:59:26 | INFO     |   Predicted : The session log chunk provided contains several network events, predominantly involving ARP (Address Resolution Protocol) and DNS (Domain Name System)...
+2026-05-25 03:59:26 | INFO     |   Scores    : exact=0  partial=0.176  word_f1=0.086
+2026-05-25 03:59:26 | INFO     | ======================================================================
+2026-05-25 03:59:26 | INFO     | STEP 7 — Classification metrics
+2026-05-25 03:59:26 | INFO     | ======================================================================
+2026-05-25 03:59:26 | INFO     | Labels found: ['NORMAL', 'SUSPICIOUS', 'UNKNOWN']
+2026-05-25 03:59:26 | INFO     | True  dist : {'NORMAL': 9648, 'SUSPICIOUS': 958}
+2026-05-25 03:59:26 | INFO     | Pred  dist : {'SUSPICIOUS': 7773, 'UNKNOWN': 2786, 'NORMAL': 47}
+2026-05-25 03:59:26 | INFO     | ======================================================================
+2026-05-25 03:59:26 | INFO     | BASIC STATISTICS
+2026-05-25 03:59:26 | INFO     | ======================================================================
+2026-05-25 03:59:26 | INFO     |   Total examples    : 10,606
+2026-05-25 03:59:26 | INFO     |   Inference time    : 96.92 min
+2026-05-25 03:59:26 | INFO     |   Time per example  : 0.55 sec
+2026-05-25 03:59:26 | INFO     |   Input length — min:564  max:26,480  mean:4,347  median:3,070
+2026-05-25 03:59:26 | INFO     | ======================================================================
+2026-05-25 03:59:26 | INFO     | STATUS CLASSIFICATION METRICS
+2026-05-25 03:59:26 | INFO     | ======================================================================
+2026-05-25 03:59:26 | INFO     |   Accuracy             : 0.0722  (7.22%)
+2026-05-25 03:59:26 | INFO     |   Precision (Macro)    : 0.3148
+2026-05-25 03:59:26 | INFO     |   Precision (Weighted) : 0.7826
+2026-05-25 03:59:26 | INFO     |   Recall    (Macro)    : 0.2540
+2026-05-25 03:59:26 | INFO     |   Recall    (Weighted) : 0.0722
+2026-05-25 03:59:26 | INFO     |   F1-Score  (Macro)    : 0.0582
+2026-05-25 03:59:26 | INFO     |   F1-Score  (Weighted) : 0.0225
+2026-05-25 03:59:26 | INFO     | WORD-LEVEL METRICS
+2026-05-25 03:59:26 | INFO     |   Exact Match Accuracy : 0.0000  (0.00%)
+2026-05-25 03:59:26 | INFO     |   Avg Partial Match    : 0.2050
+2026-05-25 03:59:26 | INFO     |   Avg Word-level F1    : 0.1061
+2026-05-25 03:59:26 | INFO     | SKLEARN CLASSIFICATION REPORT
+2026-05-25 03:59:26 | INFO     | 
+              precision    recall  f1-score   support
+
+      NORMAL       0.85      0.00      0.01      9648
+  SUSPICIOUS       0.09      0.76      0.17       958
+     UNKNOWN       0.00      0.00      0.00         0
+
+    accuracy                           0.07     10606
+   macro avg       0.31      0.25      0.06     10606
+weighted avg       0.78      0.07      0.02     10606
+
+2026-05-25 03:59:26 | INFO     | PREDICTION BREAKDOWN
+2026-05-25 03:59:26 | INFO     |   SUSPICIOUS : 7,773  (73.3%)
+2026-05-25 03:59:26 | INFO     |   NORMAL     : 47  (0.4%)
+2026-05-25 03:59:26 | INFO     |   UNKNOWN    : 2,786  (26.3%)
+2026-05-25 03:59:26 | INFO     |   Correct   : 766 / 10,606
+2026-05-25 03:59:26 | INFO     |   Incorrect : 9,840 / 10,606
+2026-05-25 03:59:26 | INFO     |   Sample incorrect prediction:
+2026-05-25 03:59:26 | INFO     |     True label : NORMAL  |  Pred label : SUSPICIOUS
+2026-05-25 03:59:26 | INFO     |     Input      : {"metadata": {"session_id": "20250918_233300", "chunk_index": 909, "start_time": "2025-09-18T17:40:21.817Z", "end_time":...
+2026-05-25 03:59:26 | INFO     |     Expected   : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 03:59:26 | INFO     |     Predicted  : The session log provided contains seven network-related events, all occurring at the same timestamp and the same start and end times. The events predo...
+2026-05-25 03:59:26 | INFO     | ======================================================================
+2026-05-25 03:59:26 | INFO     | STEP 8 — Saving results
+2026-05-25 03:59:26 | INFO     | ======================================================================
+2026-05-25 03:59:27 | INFO     | Per-example results saved : results/Phi-4-mini/base_model_evaluation_results.csv
+2026-05-25 03:59:27 | INFO     | Metrics summary saved     : results/Phi-4-mini/base_model_metrics_summary.csv
+2026-05-25 03:59:27 | INFO     | Sample results (first 10):
+2026-05-25 03:59:27 | INFO     | 
+true_label predicted_label  correct  f1_score
+    NORMAL      SUSPICIOUS    False  0.131274
+    NORMAL         UNKNOWN    False  0.063348
+    NORMAL      SUSPICIOUS    False  0.142180
+    NORMAL      SUSPICIOUS    False  0.144068
+    NORMAL      SUSPICIOUS    False  0.106557
+    NORMAL      SUSPICIOUS    False  0.111940
+    NORMAL         UNKNOWN    False  0.144144
+    NORMAL      SUSPICIOUS    False  0.118227
+    NORMAL         UNKNOWN    False  0.080357
+    NORMAL         UNKNOWN    False  0.086124
+2026-05-25 03:59:27 | INFO     | Creating metrics bar chart...
+2026-05-25 03:59:27 | INFO     | Metrics chart saved       : results/Phi-4-mini/base_model_metrics.png
+2026-05-25 03:59:27 | INFO     | Creating confusion matrix...
+2026-05-25 03:59:28 | INFO     | Confusion matrix saved    : results/Phi-4-mini/base_model_confusion_matrix.png
+2026-05-25 03:59:28 | INFO     | ======================================================================
+2026-05-25 03:59:28 | INFO     | FINAL EVALUATION SUMMARY — BASE MODEL
+2026-05-25 03:59:28 | INFO     | ======================================================================
+2026-05-25 03:59:28 | INFO     |   Model              : microsoft/Phi-4-mini-instruct  (base — no fine-tuning)
+2026-05-25 03:59:28 | INFO     |   Display name       : Phi-4-mini
+2026-05-25 03:59:28 | INFO     |   Results folder     : results/Phi-4-mini
+2026-05-25 03:59:28 | INFO     |   Inference engine   : vLLM  (tensor_parallel_size=1)
+2026-05-25 03:59:28 | INFO     |   Samples            : 10,606
+2026-05-25 03:59:28 | INFO     |   Time               : 96.92 min  (0.55 sec/example)
+2026-05-25 03:59:28 | INFO     | 
+2026-05-25 03:59:28 | INFO     |   Status classification:
+2026-05-25 03:59:28 | INFO     |     Accuracy             : 0.0722  (7.22%)
+2026-05-25 03:59:28 | INFO     |     Precision (Weighted) : 0.7826
+2026-05-25 03:59:28 | INFO     |     Recall    (Weighted) : 0.0722
+2026-05-25 03:59:28 | INFO     |     F1-Score  (Weighted) : 0.0225
+2026-05-25 03:59:28 | INFO     |     Precision (Macro)    : 0.3148
+2026-05-25 03:59:28 | INFO     |     Recall    (Macro)    : 0.2540
+2026-05-25 03:59:28 | INFO     |     F1-Score  (Macro)    : 0.0582
+2026-05-25 03:59:28 | INFO     | 
+2026-05-25 03:59:28 | INFO     |   Output quality:
+2026-05-25 03:59:28 | INFO     |     Exact Match Accuracy : 0.0000  (0.00%)
+2026-05-25 03:59:28 | INFO     |     Avg Partial Match    : 0.2050
+2026-05-25 03:59:28 | INFO     |     Avg Word-level F1    : 0.1061
+2026-05-25 03:59:28 | INFO     | 
+2026-05-25 03:59:28 | INFO     |   Compare with Fine-Tune/metrics.py to measure the fine-tuning gain.
+2026-05-25 03:59:28 | INFO     | ======================================================================
+2026-05-25 03:59:28 | INFO     | Done.
