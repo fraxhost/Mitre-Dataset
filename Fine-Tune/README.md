@@ -166,7 +166,8 @@ Fine-Tune/results/
 │   ├── evaluation_results.csv       # per-example predictions + scores
 │   ├── metrics_summary.csv          # scalar metrics (matches base_model_eval format)
 │   ├── metrics.png                  # overall + macro vs weighted bar chart
-│   └── confusion_matrix.png         # row-normalised confusion matrix
+│   ├── confusion_matrix.png         # row-normalised confusion matrix
+│   └── eval_checkpoint.json         # transient — present only during a run; auto-deleted on success
 ├── Llama-3.2-3B/
 └── Phi-4-mini/
 ```
@@ -196,6 +197,26 @@ Fine-Tune/results/
 | `--suspicious-ratio` | `0.30` | Fraction of suspicious samples |
 | `--output-dir` | `results/{Model}` | Override the auto-named output folder |
 | `--no-save` | off | Print metrics only, skip CSV/PNG output |
+| `--no-resume` | off | Ignore any existing checkpoint; start from scratch |
+| `--checkpoint-interval` | `50` | Save a checkpoint every N samples |
+
+### Crash recovery / resume
+
+`metrics.py` saves a checkpoint to `results/{Model}/eval_checkpoint.json` every 50 samples
+(configurable). If the process is interrupted, simply re-run the same command — it will
+detect the checkpoint, skip already-processed samples, and continue from where it left off.
+The checkpoint file is deleted automatically on successful completion.
+
+```bash
+# Long run interrupted? Just re-run the same command:
+python metrics.py --model llama --model-path models/Llama-3.2-3B --eval-limit None
+
+# Force a completely fresh run (discard any checkpoint):
+python metrics.py --model llama --model-path models/Llama-3.2-3B --no-resume
+
+# Save more frequently (every 20 samples instead of 50):
+python metrics.py --model llama --model-path models/Llama-3.2-3B --checkpoint-interval 20
+```
 
 ---
 
