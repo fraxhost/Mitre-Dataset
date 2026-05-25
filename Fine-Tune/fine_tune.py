@@ -57,35 +57,34 @@ from transformers import (
     TrainingArguments,
 )
 
-
 # ══════════════════════════════════════════════════════════════════════════════
 # SECTION 1 — MODEL REGISTRY
 # ══════════════════════════════════════════════════════════════════════════════
 
 MODEL_REGISTRY = {
     "qwen": {
-        "model_id":          "Qwen/Qwen2.5-1.5B-Instruct",
-        "display_name":      "Qwen2.5-1.5B",
-        "lora_targets":      ["q_proj", "k_proj", "v_proj", "o_proj"],
-        "chat_template":     "qwen",
+        "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+        "display_name": "Qwen2.5-1.5B",
+        "lora_targets": ["q_proj", "k_proj", "v_proj", "o_proj"],
+        "chat_template": "qwen",
         "trust_remote_code": True,
-        "torch_dtype":       torch.float16,
+        "torch_dtype": torch.float16,
     },
     "llama": {
-        "model_id":          "meta-llama/Llama-3.2-3B-Instruct",
-        "display_name":      "Llama-3.2-3B",
-        "lora_targets":      ["q_proj", "k_proj", "v_proj", "o_proj"],
-        "chat_template":     "llama3",
+        "model_id": "meta-llama/Llama-3.2-3B-Instruct",
+        "display_name": "Llama-3.2-3B",
+        "lora_targets": ["q_proj", "k_proj", "v_proj", "o_proj"],
+        "chat_template": "llama3",
         "trust_remote_code": False,
-        "torch_dtype":       torch.bfloat16,
+        "torch_dtype": torch.bfloat16,
     },
     "phi": {
-        "model_id":          "microsoft/Phi-4-mini-instruct",
-        "display_name":      "Phi-4-mini",
-        "lora_targets":      ["q_proj", "k_proj", "v_proj", "o_proj"],
-        "chat_template":     "phi4",
+        "model_id": "microsoft/Phi-4-mini-instruct",
+        "display_name": "Phi-4-mini",
+        "lora_targets": ["q_proj", "k_proj", "v_proj", "o_proj"],
+        "chat_template": "phi4",
         "trust_remote_code": False,
-        "torch_dtype":       torch.bfloat16,
+        "torch_dtype": torch.bfloat16,
     },
 }
 
@@ -96,55 +95,48 @@ MODEL_REGISTRY = {
 
 CONFIG = {
     # ── Data ─────────────────────────────────────────────────────────────────
-    "kaggle_dataset":           "abirashab/train-test-val",
-    "data_path":                None,   # overridden by --data-path
-    "train_file":               "train.jsonl",
-    "val_file":                 "val.jsonl",
-
+    "kaggle_dataset": "abirashab/train-test-val",
+    "data_path": None,  # overridden by --data-path
+    "train_file": "train.jsonl",
+    "val_file": "val.jsonl",
     # ── Sampling ─────────────────────────────────────────────────────────────
-    "sample_percentage":        0.4,    # fraction of training data to use
-    "min_length":               10,     # discard tokenised sequences shorter than this
-    "max_length":               2000,   # truncate / discard sequences longer than this
-
+    "sample_percentage": 0.4,  # fraction of training data to use
+    "min_length": 10,  # discard tokenised sequences shorter than this
+    "max_length": 2000,  # truncate / discard sequences longer than this
     # ── Training hyperparameters ─────────────────────────────────────────────
-    "batch_size":               1,
-    "gradient_accumulation_steps": 4,   # effective batch = 4
-    "num_epochs":               3,
-    "learning_rate":            2e-4,
-    "warmup_ratio":             0.1,
-    "weight_decay":             0.01,
-    "max_grad_norm":            1.0,
-    "lr_scheduler_type":        "cosine",
-    "optim":                    "adamw_torch",
-    "adam_beta1":               0.9,
-    "adam_beta2":               0.999,
-    "adam_epsilon":             1e-8,
-    "label_smoothing":          0.0,    # disabled to save memory
-
+    "batch_size": 1,
+    "gradient_accumulation_steps": 4,  # effective batch = 4
+    "num_epochs": 3,
+    "learning_rate": 2e-4,
+    "warmup_ratio": 0.1,
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "lr_scheduler_type": "cosine",
+    "optim": "adamw_torch",
+    "adam_beta1": 0.9,
+    "adam_beta2": 0.999,
+    "adam_epsilon": 1e-8,
+    "label_smoothing": 0.0,  # disabled to save memory
     # ── LoRA ─────────────────────────────────────────────────────────────────
-    "lora_r":                   16,
-    "lora_alpha":               32,
-    "lora_dropout":             0.05,
-
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
     # ── Strategy ─────────────────────────────────────────────────────────────
-    "fp16":                     True,
+    "fp16": True,
     # gradient_checkpointing disabled — causes CUDA errors with max_length=2000
-    "gradient_checkpointing":   False,
-
+    "gradient_checkpointing": False,
     # ── Logging / checkpointing ───────────────────────────────────────────────
-    "logging_steps":            25,
-    "eval_steps":               100,
-    "save_steps":               200,
-    "save_total_limit":         3,
-    "early_stopping_patience":  5,
+    "logging_steps": 25,
+    "eval_steps": 100,
+    "save_steps": 200,
+    "save_total_limit": 3,
+    "early_stopping_patience": 5,
     "early_stopping_threshold": 0.005,
-
     # ── Prompt ───────────────────────────────────────────────────────────────
-    "max_input_chars":          6000,   # char truncation before tokenisation
-
+    "max_input_chars": 6000,  # char truncation before tokenisation
     # ── Output dirs (populated from model key in apply_args) ─────────────────
-    "output_dir":               None,
-    "final_model_dir":          None,
+    "output_dir": None,
+    "final_model_dir": None,
 }
 
 
@@ -152,17 +144,19 @@ CONFIG = {
 # SECTION 3 — LOGGING
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def setup_logging(output_dir: str, name: str = "fine_tune") -> logging.Logger:
     log_path = Path(output_dir) / "fine_tune_run.log"
-    fmt      = "%(asctime)s | %(levelname)-8s | %(message)s"
-    datefmt  = "%Y-%m-%d %H:%M:%S"
+    fmt = "%(asctime)s | %(levelname)-8s | %(message)s"
+    datefmt = "%Y-%m-%d %H:%M:%S"
 
     handlers = [
         logging.StreamHandler(sys.stdout),
         logging.FileHandler(log_path, mode="w", encoding="utf-8"),
     ]
-    logging.basicConfig(level=logging.INFO, format=fmt, datefmt=datefmt,
-                        handlers=handlers, force=True)
+    logging.basicConfig(
+        level=logging.INFO, format=fmt, datefmt=datefmt, handlers=handlers, force=True
+    )
     logger = logging.getLogger(name)
     logger.info(f"Log file: {log_path.resolve()}")
     return logger
@@ -172,8 +166,10 @@ def setup_logging(output_dir: str, name: str = "fine_tune") -> logging.Logger:
 # SECTION 4 — CHAT TEMPLATE HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
 
-def format_training_example(instruction: str, input_text: str, output: str,
-                             model_key: str, max_input_chars: int) -> tuple[str, str]:
+
+def format_training_example(
+    instruction: str, input_text: str, output: str, model_key: str, max_input_chars: int
+) -> tuple[str, str]:
     """
     Return (full_sequence, prompt_prefix) for a training example.
 
@@ -215,6 +211,7 @@ def format_training_example(instruction: str, input_text: str, output: str,
 # SECTION 5 — DATA LOADING
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def resolve_data_dir(cfg: dict, log: logging.Logger) -> str:
     if cfg["data_path"]:
         log.info(f"Using local data directory: {cfg['data_path']}")
@@ -250,7 +247,9 @@ def load_data(cfg: dict, log: logging.Logger):
         log.info(f"  {split:10s} → {path}")
 
     dataset = load_dataset("json", data_files=file_map)
-    log.info(f"Loaded — train: {len(dataset['train']):,}  val: {len(dataset['validation']):,}")
+    log.info(
+        f"Loaded — train: {len(dataset['train']):,}  val: {len(dataset['validation']):,}"
+    )
     log.info(f"Columns: {dataset['train'].column_names}")
     return dataset
 
@@ -258,6 +257,7 @@ def load_data(cfg: dict, log: logging.Logger):
 # ══════════════════════════════════════════════════════════════════════════════
 # SECTION 6 — MODEL & TOKENIZER
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def load_model_and_tokenizer(cfg: dict, log: logging.Logger):
     reg = MODEL_REGISTRY[cfg["model_key"]]
@@ -291,6 +291,7 @@ def load_model_and_tokenizer(cfg: dict, log: logging.Logger):
 # ══════════════════════════════════════════════════════════════════════════════
 # SECTION 7 — LORA
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def apply_lora(model, cfg: dict, log: logging.Logger):
     reg = MODEL_REGISTRY[cfg["model_key"]]
@@ -330,13 +331,16 @@ def apply_lora(model, cfg: dict, log: logging.Logger):
         total += p.numel()
         if p.requires_grad:
             trainable += p.numel()
-    log.info(f"Trainable parameters: {trainable:,} / {total:,}  ({trainable / total * 100:.3f}%)")
+    log.info(
+        f"Trainable parameters: {trainable:,} / {total:,}  ({trainable / total * 100:.3f}%)"
+    )
     return model
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SECTION 8 — DATASET PREPROCESSING
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def preprocess_dataset(dataset, tokenizer, cfg: dict, log: logging.Logger):
     """
@@ -349,13 +353,13 @@ def preprocess_dataset(dataset, tokenizer, cfg: dict, log: logging.Logger):
     log.info("STEP 4 — Preprocessing dataset")
     log.info("=" * 70)
 
-    model_key       = cfg["model_key"]
+    model_key = cfg["model_key"]
     max_input_chars = cfg["max_input_chars"]
 
     def tokenise_and_mask(example):
         instruction = example.get("instruction", "")
-        input_text  = example.get("input", "")
-        output      = example.get("output", "")
+        input_text = example.get("input", "")
+        output = example.get("output", "")
 
         full_seq, prompt_prefix = format_training_example(
             instruction, input_text, output, model_key, max_input_chars
@@ -367,6 +371,7 @@ def preprocess_dataset(dataset, tokenizer, cfg: dict, log: logging.Logger):
             truncation=False,
             padding=False,
             return_tensors=None,
+            add_special_tokens=False,
         )
 
         # Tokenise the prompt prefix to find the boundary
@@ -375,6 +380,7 @@ def preprocess_dataset(dataset, tokenizer, cfg: dict, log: logging.Logger):
             truncation=False,
             padding=False,
             return_tensors=None,
+            add_special_tokens=False,
         )["input_ids"]
         prompt_len = len(prompt_ids)
 
@@ -419,9 +425,11 @@ def preprocess_dataset(dataset, tokenizer, cfg: dict, log: logging.Logger):
     if cfg["sample_percentage"] < 1.0:
         n_sample = max(1, int(len(train_tok) * cfg["sample_percentage"]))
         random.seed(42)
-        indices  = random.sample(range(len(train_tok)), n_sample)
+        indices = random.sample(range(len(train_tok)), n_sample)
         train_tok = train_tok.select(indices)
-        log.info(f"Sampled {cfg['sample_percentage']*100:.0f}% of train → {len(train_tok):,} examples")
+        log.info(
+            f"Sampled {cfg['sample_percentage']*100:.0f}% of train → {len(train_tok):,} examples"
+        )
 
     return train_tok, val_tok
 
@@ -430,10 +438,15 @@ def preprocess_dataset(dataset, tokenizer, cfg: dict, log: logging.Logger):
 # SECTION 9 — TRAINING
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def train(model, tokenizer, train_dataset, val_dataset, cfg: dict, log: logging.Logger):
     log.info("=" * 70)
     log.info("STEP 5 — Training")
     log.info("=" * 70)
+
+    # Match the precision flags to how the model was loaded
+    is_bf16 = MODEL_REGISTRY[cfg["model_key"]]["torch_dtype"] == torch.bfloat16
+    log.info(f"Mixed precision: {'bf16' if is_bf16 else 'fp16'}")
 
     training_args = TrainingArguments(
         output_dir=cfg["output_dir"],
@@ -450,7 +463,9 @@ def train(model, tokenizer, train_dataset, val_dataset, cfg: dict, log: logging.
         adam_beta2=cfg["adam_beta2"],
         adam_epsilon=cfg["adam_epsilon"],
         lr_scheduler_type=cfg["lr_scheduler_type"],
-        fp16=cfg["fp16"],
+        # fp16=cfg["fp16"],
+        fp16=not is_bf16,
+        bf16=is_bf16,
         gradient_checkpointing=cfg["gradient_checkpointing"],
         label_smoothing_factor=cfg["label_smoothing"],
         logging_steps=cfg["logging_steps"],
@@ -492,12 +507,17 @@ def train(model, tokenizer, train_dataset, val_dataset, cfg: dict, log: logging.
     if not cfg.get("no_resume", False):
         ckpt_dir = Path(cfg["output_dir"])
         if ckpt_dir.exists():
-            ckpts = sorted(ckpt_dir.glob("checkpoint-*"))
+            ckpts = sorted(
+                ckpt_dir.glob("checkpoint-*"),
+                key=lambda p: int(p.name.split("-")[1]),
+            )
             if ckpts:
                 resume_from = str(ckpts[-1])
                 log.info(f"Resuming from checkpoint: {resume_from}")
 
-    log.info(f"Training on {len(train_dataset):,} examples, validating on {len(val_dataset):,}")
+    log.info(
+        f"Training on {len(train_dataset):,} examples, validating on {len(val_dataset):,}"
+    )
     log.info(
         f"Effective batch size: {cfg['batch_size'] * cfg['gradient_accumulation_steps']}  "
         f"| Epochs: {cfg['num_epochs']}  | LR: {cfg['learning_rate']}"
@@ -521,6 +541,7 @@ def train(model, tokenizer, train_dataset, val_dataset, cfg: dict, log: logging.
 # SECTION 10 — SAVE MODEL
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def save_model(trainer, tokenizer, cfg: dict, log: logging.Logger):
     log.info("=" * 70)
     log.info("STEP 6 — Saving fine-tuned model")
@@ -536,6 +557,7 @@ def save_model(trainer, tokenizer, cfg: dict, log: logging.Logger):
 # ══════════════════════════════════════════════════════════════════════════════
 # SECTION 11 — SMOKE-TEST INFERENCE
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def test_inference(model, tokenizer, cfg: dict, log: logging.Logger):
     """
@@ -571,10 +593,15 @@ def test_inference(model, tokenizer, cfg: dict, log: logging.Logger):
         return_tensors="pt",
         truncation=True,
         max_length=2048,
+        add_special_tokens=False,
     )
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
 
-    with torch.no_grad():
+    autocast_dtype = MODEL_REGISTRY[cfg["model_key"]]["torch_dtype"]
+    device_type = model.device.type
+    if device_type == "cpu" and autocast_dtype == torch.float16:
+        autocast_dtype = torch.bfloat16
+    with torch.no_grad(), torch.autocast(device_type=device_type, dtype=autocast_dtype):
         output_ids = model.generate(
             **inputs,
             max_new_tokens=300,
@@ -584,7 +611,7 @@ def test_inference(model, tokenizer, cfg: dict, log: logging.Logger):
             pad_token_id=tokenizer.eos_token_id,
         )
     generated = tokenizer.decode(
-        output_ids[0][inputs["input_ids"].shape[1]:],
+        output_ids[0][inputs["input_ids"].shape[1] :],
         skip_special_tokens=True,
     ).strip()
 
@@ -596,42 +623,67 @@ def test_inference(model, tokenizer, cfg: dict, log: logging.Logger):
 # SECTION 12 — ARGUMENT PARSING & MAIN
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def parse_args():
     p = argparse.ArgumentParser(
         description="LoRA fine-tuning for MITRE ATT&CK log analysis — "
-                    "supports Qwen2.5-1.5B, Llama-3.2-3B, and Phi-4-mini."
+        "supports Qwen2.5-1.5B, Llama-3.2-3B, and Phi-4-mini."
     )
-    p.add_argument("--model",              required=True,
-                   choices=list(MODEL_REGISTRY.keys()),
-                   help="Model to fine-tune: qwen | llama | phi")
-    p.add_argument("--data-path",          default=None,
-                   help="Local dir with train.jsonl / val.jsonl (skips Kaggle download)")
-    p.add_argument("--output-dir",         default=None,
-                   help="Checkpoint directory (default: checkpoints/{ModelName})")
-    p.add_argument("--final-model-dir",    default=None,
-                   help="Where to save the final model (default: models/{ModelName})")
-    p.add_argument("--epochs",             default=None, type=int,
-                   help="Training epochs (default: 3)")
-    p.add_argument("--lr",                 default=None, type=float,
-                   help="Learning rate (default: 2e-4)")
-    p.add_argument("--sample-percentage",  default=None, type=float,
-                   help="Fraction of training data to use (default: 0.4)")
-    p.add_argument("--lora-r",             default=None, type=int,
-                   help="LoRA rank (default: 16)")
-    p.add_argument("--no-resume",          action="store_true",
-                   help="Start training from scratch, ignore existing checkpoints")
+    p.add_argument(
+        "--model",
+        required=True,
+        choices=list(MODEL_REGISTRY.keys()),
+        help="Model to fine-tune: qwen | llama | phi",
+    )
+    p.add_argument(
+        "--data-path",
+        default=None,
+        help="Local dir with train.jsonl / val.jsonl (skips Kaggle download)",
+    )
+    p.add_argument(
+        "--output-dir",
+        default=None,
+        help="Checkpoint directory (default: checkpoints/{ModelName})",
+    )
+    p.add_argument(
+        "--final-model-dir",
+        default=None,
+        help="Where to save the final model (default: models/{ModelName})",
+    )
+    p.add_argument(
+        "--epochs", default=None, type=int, help="Training epochs (default: 3)"
+    )
+    p.add_argument(
+        "--lr", default=None, type=float, help="Learning rate (default: 2e-4)"
+    )
+    p.add_argument(
+        "--sample-percentage",
+        default=None,
+        type=float,
+        help="Fraction of training data to use (default: 0.4)",
+    )
+    p.add_argument("--lora-r", default=None, type=int, help="LoRA rank (default: 16)")
+    p.add_argument(
+        "--no-resume",
+        action="store_true",
+        help="Start training from scratch, ignore existing checkpoints",
+    )
     return p.parse_args()
 
 
 def apply_args(cfg: dict, args) -> dict:
     reg = MODEL_REGISTRY[args.model]
-    cfg["model_key"]    = args.model
-    cfg["model_name"]   = reg["model_id"]
+    cfg["model_key"] = args.model
+    cfg["model_name"] = reg["model_id"]
     cfg["display_name"] = reg["display_name"]
 
     # Auto-set output dirs from display name unless overridden
-    cfg["output_dir"]      = args.output_dir      or os.path.join("checkpoints", reg["display_name"])
-    cfg["final_model_dir"] = args.final_model_dir or os.path.join("models",      reg["display_name"])
+    cfg["output_dir"] = args.output_dir or os.path.join(
+        "checkpoints", reg["display_name"]
+    )
+    cfg["final_model_dir"] = args.final_model_dir or os.path.join(
+        "models", reg["display_name"]
+    )
 
     if args.data_path:
         cfg["data_path"] = args.data_path
@@ -649,7 +701,7 @@ def apply_args(cfg: dict, args) -> dict:
 
 def main():
     args = parse_args()
-    cfg  = apply_args(CONFIG, args)
+    cfg = apply_args(CONFIG, args)
 
     Path(cfg["output_dir"]).mkdir(parents=True, exist_ok=True)
 
@@ -667,11 +719,11 @@ def main():
         log.info(f"  {k:<30}: {v}")
 
     try:
-        dataset                      = load_data(cfg, log)
-        model, tokenizer             = load_model_and_tokenizer(cfg, log)
-        model                        = apply_lora(model, cfg, log)
-        train_tok, val_tok           = preprocess_dataset(dataset, tokenizer, cfg, log)
-        trainer                      = train(model, tokenizer, train_tok, val_tok, cfg, log)
+        dataset = load_data(cfg, log)
+        model, tokenizer = load_model_and_tokenizer(cfg, log)
+        model = apply_lora(model, cfg, log)
+        train_tok, val_tok = preprocess_dataset(dataset, tokenizer, cfg, log)
+        trainer = train(model, tokenizer, train_tok, val_tok, cfg, log)
         save_model(trainer, tokenizer, cfg, log)
         test_inference(trainer.model, tokenizer, cfg, log)
 
