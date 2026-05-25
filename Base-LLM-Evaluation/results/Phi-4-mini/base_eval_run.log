@@ -1,0 +1,76 @@
+2026-05-25 02:21:57 | INFO     | Log file: /home/students/Desktop/projects/Mitre-Dataset/Base-LLM-Evaluation/results/Phi-4-mini/base_eval_run.log
+2026-05-25 02:21:57 | INFO     | PID 318305 — base_model_eval.py starting
+2026-05-25 02:21:57 | INFO     | Model        : Phi-4-mini  (microsoft/Phi-4-mini-instruct)
+2026-05-25 02:21:57 | INFO     | Output dir   : results/Phi-4-mini
+2026-05-25 02:21:57 | INFO     | Python 3.12.3  |  cwd: /home/students/Desktop/projects/Mitre-Dataset/Base-LLM-Evaluation
+2026-05-25 02:21:57 | INFO     | ======================================================================
+2026-05-25 02:21:57 | INFO     | CONFIGURATION
+2026-05-25 02:21:57 | INFO     | ======================================================================
+2026-05-25 02:21:57 | INFO     |   model_key                   : phi
+2026-05-25 02:21:57 | INFO     |   model_name                  : microsoft/Phi-4-mini-instruct
+2026-05-25 02:21:57 | INFO     |   display_name                : Phi-4-mini
+2026-05-25 02:21:57 | INFO     |   kaggle_dataset              : abirashab/train-test-val
+2026-05-25 02:21:57 | INFO     |   data_path                   : None
+2026-05-25 02:21:57 | INFO     |   splits                      : ['test']
+2026-05-25 02:21:57 | INFO     |   train_file                  : train.jsonl
+2026-05-25 02:21:57 | INFO     |   val_file                    : val.jsonl
+2026-05-25 02:21:57 | INFO     |   test_file                   : test.jsonl
+2026-05-25 02:21:57 | INFO     |   eval_limit                  : None
+2026-05-25 02:21:57 | INFO     |   suspicious_ratio            : 0.3
+2026-05-25 02:21:57 | INFO     |   prioritize_shortest         : True
+2026-05-25 02:21:57 | INFO     |   max_new_tokens              : 512
+2026-05-25 02:21:57 | INFO     |   temperature                 : 0.7
+2026-05-25 02:21:57 | INFO     |   top_p                       : 0.9
+2026-05-25 02:21:57 | INFO     |   max_input_chars             : 6000
+2026-05-25 02:21:57 | INFO     |   tensor_parallel_size        : 1
+2026-05-25 02:21:57 | INFO     |   gpu_memory_utilization      : 0.9
+2026-05-25 02:21:57 | INFO     |   dtype                       : bfloat16
+2026-05-25 02:21:57 | INFO     |   show_examples               : 10
+2026-05-25 02:21:57 | INFO     |   save_results                : True
+2026-05-25 02:21:57 | INFO     |   output_dir                  : results/Phi-4-mini
+2026-05-25 02:21:57 | INFO     | ======================================================================
+2026-05-25 02:21:57 | INFO     | STEP 1 — Loading base model with vLLM
+2026-05-25 02:21:57 | INFO     | ======================================================================
+2026-05-25 02:21:57 | INFO     | Model                  : microsoft/Phi-4-mini-instruct  (base — no LoRA adapters)
+2026-05-25 02:21:57 | INFO     | Display name           : Phi-4-mini
+2026-05-25 02:21:57 | INFO     | Chat template          : phi4
+2026-05-25 02:21:57 | INFO     | tensor_parallel_size   : 1
+2026-05-25 02:21:57 | INFO     | gpu_memory_utilization : 0.9
+2026-05-25 02:21:57 | INFO     | dtype                  : bfloat16
+2026-05-25 02:21:57 | INFO     |   GPU 0: NVIDIA RTX 6000 Ada Generation, 49140 MiB
+2026-05-25 02:21:57 | INFO     |   GPU 1: NVIDIA RTX 6000 Ada Generation, 49140 MiB
+2026-05-25 02:21:57 | INFO     |   GPU 2: NVIDIA RTX 6000 Ada Generation, 49140 MiB
+2026-05-25 02:21:57 | INFO     |   GPU 3: NVIDIA RTX 6000 Ada Generation, 49140 MiB
+2026-05-25 02:22:28 | INFO     | vLLM engine initialised successfully.
+2026-05-25 02:22:28 | INFO     | ======================================================================
+2026-05-25 02:22:28 | INFO     | STEP 2 — Loading dataset
+2026-05-25 02:22:28 | INFO     | ======================================================================
+2026-05-25 02:22:28 | INFO     | Downloading Kaggle dataset: abirashab/train-test-val
+2026-05-25 02:22:28 | INFO     | (Cached after first download — subsequent runs are instant.)
+2026-05-25 02:22:29 | INFO     | Dataset available at: /home/students/.cache/kagglehub/datasets/abirashab/train-test-val/versions/1
+2026-05-25 02:22:29 | INFO     |   test  → /home/students/.cache/kagglehub/datasets/abirashab/train-test-val/versions/1/test.jsonl
+2026-05-25 02:22:29 | INFO     | Loaded splits: ['test']  —  10,606 total examples.  Columns: ['instruction', 'input', 'output']
+2026-05-25 02:22:29 | INFO     | Sample instruction : Analyze this session log chunk and determine if it contains normal or suspicious activity. If suspic
+2026-05-25 02:22:29 | INFO     | Sample input       : {"metadata": {"session_id": "20250918_233300", "chunk_index": 909, "start_time": "2025-09-18T17:40:21.817Z", "end_time":...
+2026-05-25 02:22:29 | INFO     | Sample output      : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:...
+2026-05-25 02:22:29 | INFO     | ======================================================================
+2026-05-25 02:22:29 | INFO     | STEP 3 — Stratified sampling
+2026-05-25 02:22:29 | INFO     | ======================================================================
+2026-05-25 02:22:29 | INFO     | Using full test set: 10,606 examples
+2026-05-25 02:22:29 | INFO     | ======================================================================
+2026-05-25 02:22:29 | INFO     | STEP 4 — Building prompts
+2026-05-25 02:22:29 | INFO     | ======================================================================
+2026-05-25 02:22:29 | INFO     | 10,606 prompts built  (template: phi4)
+2026-05-25 02:22:29 | INFO     | Sample prompt (first 400 chars):
+<|user|>
+Analyze this session log chunk and determine if it contains normal or suspicious activity. If suspicious, identify all MITRE ATT&CK techniques and explain why.
+
+{"metadata": {"session_id": "20250918_233300", "chunk_index": 909, "start_time": "2025-09-18T17:40:21.817Z", "end_time": "2025-09-18T17:40:21.817Z", "number_of_events": 7}, "logs": [{"timestamp": "2025-09-18T17:40:21.817Z", "event...
+2026-05-25 02:22:29 | INFO     | ======================================================================
+2026-05-25 02:22:29 | INFO     | STEP 5 — Offline batch inference (vLLM)
+2026-05-25 02:22:29 | INFO     | ======================================================================
+2026-05-25 02:22:29 | INFO     | tensor_parallel_size: 1  |  temp: 0.7  top_p: 0.9  max_new_tokens: 512
+2026-05-25 02:22:29 | INFO     | Stop tokens: ['<|end|>']
+2026-05-25 02:22:29 | INFO     | Submitting all prompts in a single llm.generate() call — vLLM handles continuous batching internally.

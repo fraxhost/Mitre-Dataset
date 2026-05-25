@@ -1,3 +1,4 @@
 CSV-Logs/
 CSV-Logs-Cleaned/
 fine_tuned_model/
+.venv/

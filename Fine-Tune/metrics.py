@@ -106,7 +106,7 @@ CONFIG = {
     "test_file":      "test.jsonl",
 
     # ── Evaluation ───────────────────────────────────────────────────────────
-    "eval_limit":          2000,   # None = full dataset
+    "eval_limit":          None,   # None = full dataset
     "suspicious_ratio":    0.30,
     "prioritize_shortest": True,
     "max_new_tokens":      512,

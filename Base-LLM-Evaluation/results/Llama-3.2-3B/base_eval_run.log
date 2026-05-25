@@ -1,0 +1,279 @@
+2026-05-24 22:21:16 | INFO     | Log file: /home/students/Desktop/projects/Mitre-Dataset/Base-LLM-Evaluation/results/Llama-3.2-3B/base_eval_run.log
+2026-05-24 22:21:16 | INFO     | PID 233152 — base_model_eval.py starting
+2026-05-24 22:21:16 | INFO     | Model        : Llama-3.2-3B  (meta-llama/Llama-3.2-3B-Instruct)
+2026-05-24 22:21:16 | INFO     | Output dir   : results/Llama-3.2-3B
+2026-05-24 22:21:16 | INFO     | Python 3.12.3  |  cwd: /home/students/Desktop/projects/Mitre-Dataset/Base-LLM-Evaluation
+2026-05-24 22:21:16 | INFO     | ======================================================================
+2026-05-24 22:21:16 | INFO     | CONFIGURATION
+2026-05-24 22:21:16 | INFO     | ======================================================================
+2026-05-24 22:21:16 | INFO     |   model_key                   : llama
+2026-05-24 22:21:16 | INFO     |   model_name                  : meta-llama/Llama-3.2-3B-Instruct
+2026-05-24 22:21:16 | INFO     |   display_name                : Llama-3.2-3B
+2026-05-24 22:21:16 | INFO     |   kaggle_dataset              : abirashab/train-test-val
+2026-05-24 22:21:16 | INFO     |   data_path                   : None
+2026-05-24 22:21:16 | INFO     |   splits                      : ['test']
+2026-05-24 22:21:16 | INFO     |   train_file                  : train.jsonl
+2026-05-24 22:21:16 | INFO     |   val_file                    : val.jsonl
+2026-05-24 22:21:16 | INFO     |   test_file                   : test.jsonl
+2026-05-24 22:21:16 | INFO     |   eval_limit                  : None
+2026-05-24 22:21:16 | INFO     |   suspicious_ratio            : 0.3
+2026-05-24 22:21:16 | INFO     |   prioritize_shortest         : True
+2026-05-24 22:21:16 | INFO     |   max_new_tokens              : 512
+2026-05-24 22:21:16 | INFO     |   temperature                 : 0.7
+2026-05-24 22:21:16 | INFO     |   top_p                       : 0.9
+2026-05-24 22:21:16 | INFO     |   max_input_chars             : 6000
+2026-05-24 22:21:16 | INFO     |   tensor_parallel_size        : 1
+2026-05-24 22:21:16 | INFO     |   gpu_memory_utilization      : 0.9
+2026-05-24 22:21:16 | INFO     |   dtype                       : bfloat16
+2026-05-24 22:21:16 | INFO     |   show_examples               : 10
+2026-05-24 22:21:16 | INFO     |   save_results                : True
+2026-05-24 22:21:16 | INFO     |   output_dir                  : results/Llama-3.2-3B
+2026-05-24 22:21:16 | INFO     | ======================================================================
+2026-05-24 22:21:16 | INFO     | STEP 1 — Loading base model with vLLM
+2026-05-24 22:21:16 | INFO     | ======================================================================
+2026-05-24 22:21:16 | INFO     | Model                  : meta-llama/Llama-3.2-3B-Instruct  (base — no LoRA adapters)
+2026-05-24 22:21:16 | INFO     | Display name           : Llama-3.2-3B
+2026-05-24 22:21:16 | INFO     | Chat template          : llama3
+2026-05-24 22:21:16 | INFO     | tensor_parallel_size   : 1
+2026-05-24 22:21:16 | INFO     | gpu_memory_utilization : 0.9
+2026-05-24 22:21:16 | INFO     | dtype                  : bfloat16
+2026-05-24 22:21:16 | INFO     |   GPU 0: NVIDIA RTX 6000 Ada Generation, 49140 MiB
+2026-05-24 22:21:16 | INFO     |   GPU 1: NVIDIA RTX 6000 Ada Generation, 49140 MiB
+2026-05-24 22:21:16 | INFO     |   GPU 2: NVIDIA RTX 6000 Ada Generation, 49140 MiB
+2026-05-24 22:21:16 | INFO     |   GPU 3: NVIDIA RTX 6000 Ada Generation, 49140 MiB
+2026-05-24 22:21:46 | INFO     | vLLM engine initialised successfully.
+2026-05-24 22:21:46 | INFO     | ======================================================================
+2026-05-24 22:21:46 | INFO     | STEP 2 — Loading dataset
+2026-05-24 22:21:46 | INFO     | ======================================================================
+2026-05-24 22:21:46 | INFO     | Downloading Kaggle dataset: abirashab/train-test-val
+2026-05-24 22:21:46 | INFO     | (Cached after first download — subsequent runs are instant.)
+2026-05-24 22:21:46 | INFO     | Dataset available at: /home/students/.cache/kagglehub/datasets/abirashab/train-test-val/versions/1
+2026-05-24 22:21:46 | INFO     |   test  → /home/students/.cache/kagglehub/datasets/abirashab/train-test-val/versions/1/test.jsonl
+2026-05-24 22:21:47 | INFO     | Loaded splits: ['test']  —  10,606 total examples.  Columns: ['instruction', 'input', 'output']
+2026-05-24 22:21:47 | INFO     | Sample instruction : Analyze this session log chunk and determine if it contains normal or suspicious activity. If suspic
+2026-05-24 22:21:47 | INFO     | Sample input       : {"metadata": {"session_id": "20250918_233300", "chunk_index": 909, "start_time": "2025-09-18T17:40:21.817Z", "end_time":...
+2026-05-24 22:21:47 | INFO     | Sample output      : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:...
+2026-05-24 22:21:47 | INFO     | ======================================================================
+2026-05-24 22:21:47 | INFO     | STEP 3 — Stratified sampling
+2026-05-24 22:21:47 | INFO     | ======================================================================
+2026-05-24 22:21:47 | INFO     | Using full test set: 10,606 examples
+2026-05-24 22:21:47 | INFO     | ======================================================================
+2026-05-24 22:21:47 | INFO     | STEP 4 — Building prompts
+2026-05-24 22:21:47 | INFO     | ======================================================================
+2026-05-24 22:21:47 | INFO     | 10,606 prompts built  (template: llama3)
+2026-05-24 22:21:47 | INFO     | Sample prompt (first 400 chars):
+<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+
+Analyze this session log chunk and determine if it contains normal or suspicious activity. If suspicious, identify all MITRE ATT&CK techniques and explain why.
+
+{"metadata": {"session_id": "20250918_233300", "chunk_index": 909, "start_time": "2025-09-18T17:40:21.817Z", "end_time": "2025-09-18T17:40:21.817Z", "number_of_events": 7}, "logs":...
+2026-05-24 22:21:47 | INFO     | ======================================================================
+2026-05-24 22:21:47 | INFO     | STEP 5 — Offline batch inference (vLLM)
+2026-05-24 22:21:47 | INFO     | ======================================================================
+2026-05-24 22:21:47 | INFO     | tensor_parallel_size: 1  |  temp: 0.7  top_p: 0.9  max_new_tokens: 512
+2026-05-24 22:21:47 | INFO     | Stop tokens: ['<|eot_id|>']
+2026-05-24 22:21:47 | INFO     | Submitting all prompts in a single llm.generate() call — vLLM handles continuous batching internally.
+2026-05-24 23:18:02 | INFO     | Inference complete: 56.25 min total  (0.32 sec/example)
+2026-05-24 23:18:02 | INFO     | ======================================================================
+2026-05-24 23:18:02 | INFO     | STEP 6 — Computing per-example metrics
+2026-05-24 23:18:02 | INFO     | ======================================================================
+2026-05-24 23:18:03 | INFO     | ------------------------------------------------------------
+2026-05-24 23:18:03 | INFO     | Example 1/10
+2026-05-24 23:18:03 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 909, "start_time": "2025-09-18T17:40:2...
+2026-05-24 23:18:03 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-24 23:18:03 | INFO     |   Predicted : After analyzing the session log chunk, I have identified some suspicious activity. The activity appears to be a TCP SYN flood attack, which is a commo...
+2026-05-24 23:18:03 | INFO     |   Scores    : exact=0  partial=0.216  word_f1=0.123
+2026-05-24 23:18:03 | INFO     | ------------------------------------------------------------
+2026-05-24 23:18:03 | INFO     | Example 2/10
+2026-05-24 23:18:03 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 1668, "start_time": "2025-10-25T11:18:...
+2026-05-24 23:18:03 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-24 23:18:03 | INFO     |   Predicted : The session log chunk appears to contain normal network traffic activity. However, there are some suspicious patterns and techniques that may indicate...
+2026-05-24 23:18:03 | INFO     |   Scores    : exact=0  partial=0.231  word_f1=0.112
+2026-05-24 23:18:03 | INFO     | ------------------------------------------------------------
+2026-05-24 23:18:03 | INFO     | Example 3/10
+2026-05-24 23:18:03 | INFO     |   Input     : {"metadata": {"session_id": "20251025_094500", "chunk_index": 45, "start_time": "2025-10-25T03:45:42...
+2026-05-24 23:18:03 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-24 23:18:03 | INFO     |   Predicted : Based on the provided session log chunk, I have identified several potential indicators of suspicious activity. Here's a breakdown of the techniques a...
+2026-05-24 23:18:03 | INFO     |   Scores    : exact=0  partial=0.255  word_f1=0.115
+2026-05-24 23:18:03 | INFO     | ------------------------------------------------------------
+2026-05-24 23:18:03 | INFO     | Example 4/10
+2026-05-24 23:18:03 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 731, "start_time": "2025-10-25T11:09:0...
+2026-05-24 23:18:03 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-24 23:18:03 | INFO     |   Predicted : After analyzing the session log chunk, I have identified several potential MITRE ATT&CK techniques that suggest suspicious activity:
+
+1. **T1055: Comm...
+2026-05-24 23:18:03 | INFO     |   Scores    : exact=0  partial=0.212  word_f1=0.099
+2026-05-24 23:18:03 | INFO     | ------------------------------------------------------------
+2026-05-24 23:18:03 | INFO     | Example 5/10
+2026-05-24 23:18:03 | INFO     |   Input     : {"metadata": {"session_id": "20251026_065700", "chunk_index": 1517, "start_time": "2025-10-26T01:12:...
+2026-05-24 23:18:03 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-24 23:18:03 | INFO     |   Predicted : Based on the provided session log chunk, I have identified some suspicious activity. Here's a breakdown of the techniques used and why they are consid...
+2026-05-24 23:18:03 | INFO     |   Scores    : exact=0  partial=0.151  word_f1=0.071
+2026-05-24 23:18:03 | INFO     | ------------------------------------------------------------
+2026-05-24 23:18:03 | INFO     | Example 6/10
+2026-05-24 23:18:03 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 1344, "start_time": "2025-09-18T17:44:...
+2026-05-24 23:18:03 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (5 Network, 2 Process). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard netwo...
+2026-05-24 23:18:03 | INFO     |   Predicted : Based on the provided session log chunk, I have identified some suspicious activity that may indicate a potential threat. The analysis is based on the...
+2026-05-24 23:18:03 | INFO     |   Scores    : exact=0  partial=0.180  word_f1=0.097
+2026-05-24 23:18:03 | INFO     | ------------------------------------------------------------
+2026-05-24 23:18:03 | INFO     | Example 7/10
+2026-05-24 23:18:03 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 56, "start_time": "2025-10-25T11:02:04...
+2026-05-24 23:18:03 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-24 23:18:03 | INFO     |   Predicted : Based on the provided session log chunk, I have identified several potential MITRE ATT&CK techniques:
+
+1. **T1203: DNS tunneling**: The log entries sh...
+2026-05-24 23:18:03 | INFO     |   Scores    : exact=0  partial=0.226  word_f1=0.125
+2026-05-24 23:18:03 | INFO     | ------------------------------------------------------------
+2026-05-24 23:18:03 | INFO     | Example 8/10
+2026-05-24 23:18:03 | INFO     |   Input     : {"metadata": {"session_id": "20251026_065700", "chunk_index": 940, "start_time": "2025-10-26T01:05:1...
+2026-05-24 23:18:03 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-24 23:18:03 | INFO     |   Predicted : Based on the provided session log chunk, I have identified several suspicious activities that may indicate a potential attack. Here are the MITRE ATT&...
+2026-05-24 23:18:03 | INFO     |   Scores    : exact=0  partial=0.118  word_f1=0.061
+2026-05-24 23:18:03 | INFO     | ------------------------------------------------------------
+2026-05-24 23:18:03 | INFO     | Example 9/10
+2026-05-24 23:18:03 | INFO     |   Input     : {"metadata": {"session_id": "20251025_094500", "chunk_index": 1086, "start_time": "2025-10-25T03:56:...
+2026-05-24 23:18:03 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (6 Network, 1 Process). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard netwo...
+2026-05-24 23:18:03 | INFO     |   Predicted : This session log chunk appears to contain normal network activity, but with some suspicious signs. Here's a breakdown of the events:
+
+**Normal activit...
+2026-05-24 23:18:03 | INFO     |   Scores    : exact=0  partial=0.164  word_f1=0.090
+2026-05-24 23:18:03 | INFO     | ------------------------------------------------------------
+2026-05-24 23:18:03 | INFO     | Example 10/10
+2026-05-24 23:18:03 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 329, "start_time": "2025-09-18T17:36:3...
+2026-05-24 23:18:03 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-24 23:18:03 | INFO     |   Predicted : Based on the provided session log chunk, I have identified several potential indicators of suspicious activity. Here's a breakdown of the MITRE ATT&CK...
+2026-05-24 23:18:03 | INFO     |   Scores    : exact=0  partial=0.137  word_f1=0.070
+2026-05-24 23:18:03 | INFO     | ======================================================================
+2026-05-24 23:18:03 | INFO     | STEP 7 — Classification metrics
+2026-05-24 23:18:03 | INFO     | ======================================================================
+2026-05-24 23:18:04 | INFO     | Labels found: ['NORMAL', 'SUSPICIOUS', 'UNKNOWN']
+2026-05-24 23:18:04 | INFO     | True  dist : {'NORMAL': 9648, 'SUSPICIOUS': 958}
+2026-05-24 23:18:04 | INFO     | Pred  dist : {'SUSPICIOUS': 9293, 'UNKNOWN': 1301, 'NORMAL': 12}
+2026-05-24 23:18:04 | INFO     | ======================================================================
+2026-05-24 23:18:04 | INFO     | BASIC STATISTICS
+2026-05-24 23:18:04 | INFO     | ======================================================================
+2026-05-24 23:18:04 | INFO     |   Total examples    : 10,606
+2026-05-24 23:18:04 | INFO     |   Inference time    : 56.25 min
+2026-05-24 23:18:04 | INFO     |   Time per example  : 0.32 sec
+2026-05-24 23:18:04 | INFO     |   Input length — min:564  max:26,480  mean:4,347  median:3,070
+2026-05-24 23:18:04 | INFO     | ======================================================================
+2026-05-24 23:18:04 | INFO     | STATUS CLASSIFICATION METRICS
+2026-05-24 23:18:04 | INFO     | ======================================================================
+2026-05-24 23:18:04 | INFO     |   Accuracy             : 0.0811  (8.11%)
+2026-05-24 23:18:04 | INFO     |   Precision (Macro)    : 0.3360
+2026-05-24 23:18:04 | INFO     |   Precision (Weighted) : 0.8421
+2026-05-24 23:18:04 | INFO     |   Recall    (Macro)    : 0.2958
+2026-05-24 23:18:04 | INFO     |   Recall    (Weighted) : 0.0811
+2026-05-24 23:18:04 | INFO     |   F1-Score  (Macro)    : 0.0560
+2026-05-24 23:18:04 | INFO     |   F1-Score  (Weighted) : 0.0170
+2026-05-24 23:18:04 | INFO     | WORD-LEVEL METRICS
+2026-05-24 23:18:04 | INFO     |   Exact Match Accuracy : 0.0000  (0.00%)
+2026-05-24 23:18:04 | INFO     |   Avg Partial Match    : 0.1860
+2026-05-24 23:18:04 | INFO     |   Avg Word-level F1    : 0.0966
+2026-05-24 23:18:04 | INFO     | SKLEARN CLASSIFICATION REPORT
+2026-05-24 23:18:04 | INFO     | 
+              precision    recall  f1-score   support
+
+      NORMAL       0.92      0.00      0.00      9648
+  SUSPICIOUS       0.09      0.89      0.17       958
+     UNKNOWN       0.00      0.00      0.00         0
+
+    accuracy                           0.08     10606
+   macro avg       0.34      0.30      0.06     10606
+weighted avg       0.84      0.08      0.02     10606
+
+2026-05-24 23:18:04 | INFO     | PREDICTION BREAKDOWN
+2026-05-24 23:18:04 | INFO     |   SUSPICIOUS : 9,293  (87.6%)
+2026-05-24 23:18:04 | INFO     |   NORMAL     : 12  (0.1%)
+2026-05-24 23:18:04 | INFO     |   UNKNOWN    : 1,301  (12.3%)
+2026-05-24 23:18:04 | INFO     |   Correct   : 860 / 10,606
+2026-05-24 23:18:04 | INFO     |   Incorrect : 9,746 / 10,606
+2026-05-24 23:18:04 | INFO     |   Sample incorrect prediction:
+2026-05-24 23:18:04 | INFO     |     True label : NORMAL  |  Pred label : SUSPICIOUS
+2026-05-24 23:18:04 | INFO     |     Input      : {"metadata": {"session_id": "20250918_233300", "chunk_index": 909, "start_time": "2025-09-18T17:40:21.817Z", "end_time":...
+2026-05-24 23:18:04 | INFO     |     Expected   : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-24 23:18:04 | INFO     |     Predicted  : After analyzing the session log chunk, I have identified some suspicious activity. The activity appears to be a TCP SYN flood attack, which is a commo...
+2026-05-24 23:18:04 | INFO     | ======================================================================
+2026-05-24 23:18:04 | INFO     | STEP 8 — Saving results
+2026-05-24 23:18:04 | INFO     | ======================================================================
+2026-05-24 23:18:05 | INFO     | Per-example results saved : results/Llama-3.2-3B/base_model_evaluation_results.csv
+2026-05-24 23:18:05 | INFO     | Metrics summary saved     : results/Llama-3.2-3B/base_model_metrics_summary.csv
+2026-05-24 23:18:05 | INFO     | Sample results (first 10):
+2026-05-24 23:18:05 | INFO     | 
+true_label predicted_label  correct  f1_score
+    NORMAL      SUSPICIOUS    False  0.122905
+    NORMAL      SUSPICIOUS    False  0.111628
+    NORMAL      SUSPICIOUS    False  0.115044
+    NORMAL      SUSPICIOUS    False  0.099099
+    NORMAL      SUSPICIOUS    False  0.071111
+    NORMAL      SUSPICIOUS    False  0.096916
+    NORMAL      SUSPICIOUS    False  0.125000
+    NORMAL      SUSPICIOUS    False  0.061224
+    NORMAL      SUSPICIOUS    False  0.090090
+    NORMAL      SUSPICIOUS    False  0.069652
+2026-05-24 23:18:05 | INFO     | Creating metrics bar chart...
+2026-05-24 23:18:05 | INFO     | Metrics chart saved       : results/Llama-3.2-3B/base_model_metrics.png
+2026-05-24 23:18:05 | INFO     | Creating confusion matrix...
+2026-05-24 23:18:05 | INFO     | Confusion matrix saved    : results/Llama-3.2-3B/base_model_confusion_matrix.png
+2026-05-24 23:18:05 | INFO     | ======================================================================
+2026-05-24 23:18:05 | INFO     | FINAL EVALUATION SUMMARY — BASE MODEL
+2026-05-24 23:18:05 | INFO     | ======================================================================
+2026-05-24 23:18:05 | INFO     |   Model              : meta-llama/Llama-3.2-3B-Instruct  (base — no fine-tuning)
+2026-05-24 23:18:05 | INFO     |   Display name       : Llama-3.2-3B
+2026-05-24 23:18:05 | INFO     |   Results folder     : results/Llama-3.2-3B
+2026-05-24 23:18:05 | INFO     |   Inference engine   : vLLM  (tensor_parallel_size=1)
+2026-05-24 23:18:05 | INFO     |   Samples            : 10,606
+2026-05-24 23:18:05 | INFO     |   Time               : 56.25 min  (0.32 sec/example)
+2026-05-24 23:18:05 | INFO     | 
+2026-05-24 23:18:05 | INFO     |   Status classification:
+2026-05-24 23:18:05 | INFO     |     Accuracy             : 0.0811  (8.11%)
+2026-05-24 23:18:05 | INFO     |     Precision (Weighted) : 0.8421
+2026-05-24 23:18:05 | INFO     |     Recall    (Weighted) : 0.0811
+2026-05-24 23:18:05 | INFO     |     F1-Score  (Weighted) : 0.0170
+2026-05-24 23:18:05 | INFO     |     Precision (Macro)    : 0.3360
+2026-05-24 23:18:05 | INFO     |     Recall    (Macro)    : 0.2958
+2026-05-24 23:18:05 | INFO     |     F1-Score  (Macro)    : 0.0560
+2026-05-24 23:18:05 | INFO     | 
+2026-05-24 23:18:05 | INFO     |   Output quality:
+2026-05-24 23:18:05 | INFO     |     Exact Match Accuracy : 0.0000  (0.00%)
+2026-05-24 23:18:05 | INFO     |     Avg Partial Match    : 0.1860
+2026-05-24 23:18:05 | INFO     |     Avg Word-level F1    : 0.0966
+2026-05-24 23:18:05 | INFO     | 
+2026-05-24 23:18:05 | INFO     |   Compare with Fine-Tune/metrics.py to measure the fine-tuning gain.
+2026-05-24 23:18:05 | INFO     | ======================================================================
+2026-05-24 23:18:05 | INFO     | Done.

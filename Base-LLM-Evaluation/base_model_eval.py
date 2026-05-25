@@ -134,7 +134,7 @@ CONFIG = {
     "test_file":   "test.jsonl",
 
     # ── Evaluation ────────────────────────────────────────────────────────────
-    "eval_limit": 2000,          # set to None to evaluate the full test set
+    "eval_limit": None,          # set to None to evaluate the full test set
     "suspicious_ratio": 0.30,    # fraction of suspicious samples when eval_limit is set
     "prioritize_shortest": True, # process shortest logs first (faster on limited hardware)
     "max_new_tokens": 512,

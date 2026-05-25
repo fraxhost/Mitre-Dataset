@@ -100,9 +100,16 @@ CONFIG = {
     "train_file": "train.jsonl",
     "val_file": "val.jsonl",
     # ── Sampling ─────────────────────────────────────────────────────────────
+<<<<<<< Updated upstream
     "sample_percentage": 0.4,  # fraction of training data to use
     "min_length": 10,  # discard tokenised sequences shorter than this
     "max_length": 2000,  # truncate / discard sequences longer than this
+=======
+    "sample_percentage":        1.0,    # fraction of training data to use
+    "min_length":               10,     # discard tokenised sequences shorter than this
+    "max_length":               2000,   # truncate / discard sequences longer than this
+
+>>>>>>> Stashed changes
     # ── Training hyperparameters ─────────────────────────────────────────────
     "batch_size": 1,
     "gradient_accumulation_steps": 4,  # effective batch = 4
