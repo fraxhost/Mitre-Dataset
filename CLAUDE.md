@@ -170,7 +170,9 @@ python metrics.py --model phi   --model-path models/Phi-4-mini --eval-limit None
 #   --model-path /path/to/adapters  fine-tuned model path (required)
 #   --eval-limit N|None             sample cap (default: 2000)
 #   --splits train val test         splits to evaluate (default: test)
-#   --no-save                       print metrics only
+#   --no-save                       print metrics only, skip CSV/PNG output
+#   --no-resume                     ignore any existing checkpoint, start fresh
+#   --checkpoint-interval N         save checkpoint every N samples (default: 50)
 ```
 
 ### Automated Log Collection (`Automated Log/`)
@@ -201,6 +203,7 @@ python main.py
 - Training hyperparameters: lr=2e-4, batch=1, grad_accum=4 (effective=4), epochs=3, cosine scheduler, AdamW, early stopping (patience=5)
 - Checkpoints saved to `checkpoints/{ModelName}/`; final model to `models/{ModelName}/`
 - Evaluation results saved to `results/{ModelName}/` (CSV + PNG charts)
+- `metrics.py` writes a crash-recovery checkpoint (`results/{ModelName}/eval_checkpoint.json`) every 50 samples (configurable via `--checkpoint-interval`); re-running the same command resumes from the last checkpoint; use `--no-resume` to force a fresh run
 
 ### Training Data Format
 Every training example is an instruction-tuning triple:
