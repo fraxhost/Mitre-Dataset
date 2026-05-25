@@ -38,6 +38,7 @@ matplotlib.use("Agg")
 
 # ── Standard library ─────────────────────────────────────────────────────────
 import argparse
+import json
 import logging
 import os
 import sys
@@ -122,6 +123,10 @@ CONFIG = {
     "show_examples":  10,
     "save_results":   True,
     "output_dir":     None,        # auto-set to results/{display_name}
+
+    # ── Checkpoint / resume ──────────────────────────────────────────────────
+    "checkpoint_interval": 50,   # save checkpoint every N samples
+    "no_resume":           False, # overridden by --no-resume flag
 }
 
 
@@ -422,54 +427,113 @@ def generate_response(model, tokenizer, instruction: str, input_text: str,
     return generated.strip()
 
 
+def load_eval_checkpoint(cfg: dict, log: logging.Logger):
+    """Return (results, start_index) from a prior checkpoint, or ([], 0) if none."""
+    if cfg.get("no_resume", False):
+        log.info("--no-resume set: ignoring any existing checkpoint.")
+        return [], 0
+
+    ckpt_path = Path(cfg["output_dir"]) / "eval_checkpoint.json"
+    if not ckpt_path.exists():
+        log.info("No eval checkpoint found; starting from scratch.")
+        return [], 0
+
+    try:
+        with open(ckpt_path, "r", encoding="utf-8") as f:
+            ckpt = json.load(f)
+        results     = ckpt["results"]
+        start_index = ckpt["next_index"]
+        log.info(
+            f"Resuming from checkpoint: {len(results):,} samples done "
+            f"(next index: {start_index})  [saved at {ckpt.get('saved_at', 'unknown')}]"
+        )
+        return results, start_index
+    except (json.JSONDecodeError, KeyError) as exc:
+        log.warning(f"Checkpoint file corrupt ({exc}); starting from scratch.")
+        return [], 0
+
+
+def save_eval_checkpoint(results: list, next_index: int,
+                         cfg: dict, log: logging.Logger) -> None:
+    """Atomically write a partial checkpoint (write-then-rename pattern)."""
+    ckpt_path = Path(cfg["output_dir"]) / "eval_checkpoint.json"
+    tmp_path  = ckpt_path.with_suffix(".json.tmp")
+    payload = {
+        "next_index": next_index,
+        "saved_at":   time.strftime("%Y-%m-%d %H:%M:%S"),
+        "results":    results,
+    }
+    with open(tmp_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f)
+    tmp_path.replace(ckpt_path)   # atomic POSIX rename
+    log.info(f"  [checkpoint] {next_index} samples saved → {ckpt_path}")
+
+
 def run_evaluation(eval_set, model, tokenizer, cfg: dict, log: logging.Logger):
     log.info("=" * 70)
     log.info("STEP 4 — Running evaluation")
     log.info("=" * 70)
     log.info(f"Evaluating {len(eval_set):,} examples  (chat template: {MODEL_REGISTRY[cfg['model_key']]['chat_template']})")
 
-    results     = []
-    partial_scores = []
-    word_f1_scores = []
-    exact_match_total = 0.0
+    # ── Resume: load any partial checkpoint ──────────────────────────────────
+    results, start_index = load_eval_checkpoint(cfg, log)
+    exact_match_total = sum(r["exact_match"]  for r in results)
+    partial_scores    = [r["partial_match"]   for r in results]
+    word_f1_scores    = [r["f1_score"]        for r in results]
 
-    t0 = time.time()
-    for i, example in enumerate(eval_set):
-        pred = generate_response(
-            model, tokenizer,
-            example["instruction"], example["input"],
-            cfg,
-        )
-        exp = example["output"]
+    total_size    = len(eval_set)
+    ckpt_interval = cfg.get("checkpoint_interval", 50)
+    t0            = time.time()
 
-        em      = calculate_exact_match(pred, exp)
-        partial = calculate_partial_match(pred, exp)
-        wf1     = calculate_word_f1(pred, exp)
+    if start_index < total_size:
+        remaining = eval_set.select(list(range(start_index, total_size)))
+        for local_i, example in enumerate(remaining):
+            global_i = start_index + local_i
 
-        exact_match_total += em
-        partial_scores.append(partial)
-        word_f1_scores.append(wf1)
-
-        results.append({
-            "index":         i,
-            "instruction":   example["instruction"],
-            "input":         example["input"],
-            "expected":      exp,
-            "predicted":     pred,
-            "exact_match":   em,
-            "partial_match": partial,
-            "f1_score":      wf1,
-        })
-
-        if (i + 1) % 50 == 0 or i == 0:
-            elapsed_so_far = time.time() - t0
-            log.info(
-                f"  [{i+1:>5}/{len(eval_set)}]  "
-                f"{elapsed_so_far / 60:.1f} min elapsed  "
-                f"({elapsed_so_far / (i+1):.1f} sec/example)"
+            pred    = generate_response(
+                model, tokenizer,
+                example["instruction"], example["input"],
+                cfg,
             )
+            exp     = example["output"]
+            em      = calculate_exact_match(pred, exp)
+            partial = calculate_partial_match(pred, exp)
+            wf1     = calculate_word_f1(pred, exp)
+
+            exact_match_total += em
+            partial_scores.append(partial)
+            word_f1_scores.append(wf1)
+            results.append({
+                "index":         global_i,
+                "instruction":   example["instruction"],
+                "input":         example["input"],
+                "expected":      exp,
+                "predicted":     pred,
+                "exact_match":   em,
+                "partial_match": partial,
+                "f1_score":      wf1,
+            })
+
+            if (local_i + 1) % 50 == 0 or local_i == 0:
+                elapsed_so_far = time.time() - t0
+                log.info(
+                    f"  [{global_i+1:>5}/{total_size}]  "
+                    f"{elapsed_so_far / 60:.1f} min elapsed  "
+                    f"({elapsed_so_far / (local_i + 1):.1f} sec/example)"
+                )
+
+            if (local_i + 1) % ckpt_interval == 0:
+                save_eval_checkpoint(results, global_i + 1, cfg, log)
+    else:
+        log.info("All samples already processed in checkpoint; skipping inference.")
 
     elapsed = time.time() - t0
+
+    # ── Clean up checkpoint on successful completion ──────────────────────────
+    ckpt_path = Path(cfg["output_dir"]) / "eval_checkpoint.json"
+    if ckpt_path.exists():
+        ckpt_path.unlink()
+        log.info("Checkpoint removed after successful completion.")
 
     # Show sample predictions
     n_show = min(cfg["show_examples"], len(results))
@@ -784,6 +848,18 @@ def parse_args():
                    help="Where to write results (default: results/{ModelName})")
     p.add_argument("--no-save",           action="store_true",
                    help="Print metrics only, skip CSV/PNG output")
+    p.add_argument(
+        "--no-resume",
+        action="store_true",
+        help="Ignore any existing eval checkpoint and start from scratch.",
+    )
+    p.add_argument(
+        "--checkpoint-interval",
+        default=None,
+        type=int,
+        metavar="N",
+        help="Save a checkpoint every N samples (default: 50).",
+    )
     return p.parse_args()
 
 
@@ -806,6 +882,9 @@ def apply_args(cfg: dict, args) -> dict:
         cfg["suspicious_ratio"] = args.suspicious_ratio
     if args.no_save:
         cfg["save_results"] = False
+    cfg["no_resume"] = args.no_resume
+    if args.checkpoint_interval is not None:
+        cfg["checkpoint_interval"] = args.checkpoint_interval
     return cfg
 
 
