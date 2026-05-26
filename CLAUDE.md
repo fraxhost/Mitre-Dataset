@@ -173,6 +173,18 @@ python metrics.py --model phi   --model-path models/Phi-4-mini --eval-limit None
 #   --no-save                       print metrics only, skip CSV/PNG output
 #   --no-resume                     ignore any existing checkpoint, start fresh
 #   --checkpoint-interval N         save checkpoint every N samples (default: 50)
+
+# Compare all evaluated models (base vs fine-tuned)
+python compare_results.py                          # all discovered models
+python compare_results.py --no-save               # print only
+python compare_results.py --models Llama-3.2-3B   # single model
+
+# Key overrides for compare_results.py
+#   --results-dir /path             Fine-Tune results dir (default: results/)
+#   --base-results-dir /path        Base-LLM-Evaluation results dir (default: ../Base-LLM-Evaluation/results)
+#   --output-dir /path              where to write comparison outputs (default: results/)
+#   --models NAME [NAME ...]        restrict to specific model names
+#   --no-save                       print table only, skip CSV/PNG output
 ```
 
 ### Automated Log Collection (`Automated Log/`)
@@ -195,7 +207,7 @@ python main.py
 
 ### Fine-Tuning (`Fine-Tune/`)
 - **Models supported:** `Qwen/Qwen2.5-1.5B-Instruct`, `meta-llama/Llama-3.2-3B-Instruct`, `microsoft/Phi-4-mini-instruct`
-- **Scripts:** `fine_tune.py` (training) + `metrics.py` (evaluation); Kaggle notebooks kept as reference
+- **Scripts:** `fine_tune.py` (training) + `metrics.py` (evaluation) + `compare_results.py` (multi-model comparison); Kaggle notebooks kept as reference
 - LoRA config: r=16, alpha=32, targets: q/k/v/o_proj, dropout=0.05
 - Each model uses its **native chat template** — Llama-3 header tokens, Phi-4 `<|user|>/<|end|>` tokens, Qwen raw text
 - Prompt masking: prompt tokens set to -100 so loss is computed on output tokens only
@@ -227,6 +239,7 @@ Each sub-system has its own `.env`. Key variables:
 
 - `Base-LLM-Evaluation/base_model_eval.py` evaluates the **base** (non-fine-tuned) model using vLLM offline batch inference on 4 × NVIDIA Ada 6000 GPUs; supports Qwen2.5-1.5B, Llama-3.2-3B, Phi-4-mini via `--model`; each model's native chat template is applied automatically; results land in `results/{ModelName}/` for side-by-side comparison
 - `Fine-Tune/fine_tune.py` fine-tunes any supported model with LoRA; `Fine-Tune/metrics.py` evaluates the fine-tuned adapters — both use the same `MODEL_REGISTRY` and chat template logic as `base_model_eval.py` so metrics are directly comparable
+- `Fine-Tune/compare_results.py` auto-discovers all model folders in `Fine-Tune/results/`, merges fine-tuned metrics with base metrics from `Base-LLM-Evaluation/results/`, and writes `comparison_summary.csv`, `comparison.png` (all 10 metrics grouped bar chart), and `confusion_matrix_comparison.png` (base vs fine-tuned per model)
 - Kaggle notebooks `fine-tune.ipynb` and `metrics.ipynb` are kept as-is for Kaggle reference (Qwen only)
 - `mitre-attack-analyzer/utils/extract_test_data.py` extracts test samples from the dataset; `mitre-attack-analyzer/data/` holds pre-extracted test JSON files with an `answer_key.json`
 - Log chunks use `session_id` (timestamp format `YYYYMMDD_HHMMSS`) as the grouping key throughout — session integrity is preserved across all pipeline stages

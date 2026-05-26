@@ -22,6 +22,7 @@ the model was trained on exactly match the prompts used at inference time.
 |---|---|
 | `fine_tune.py` | **LoRA fine-tuning** — headless Python script, run with `nohup` or directly |
 | `metrics.py` | **Fine-tuned model evaluation** — Transformers inference, same metrics as `base_model_eval.py` |
+| `compare_results.py` | **Multi-model comparison** — auto-discovers all result folders and produces side-by-side tables, bar charts, and confusion matrix grids |
 | `requirements.txt` | Python dependencies |
 | `fine-tune.ipynb` | Kaggle notebook (Qwen only) — kept as reference; **not the primary script** |
 | `metrics.ipynb` | Kaggle notebook (Qwen only) — kept as reference; **not the primary script** |
@@ -232,21 +233,42 @@ Each model's native format is applied consistently in `fine_tune.py` and `metric
 
 ---
 
-## Comparing Base vs Fine-Tuned
+## Comparing Base vs Fine-Tuned (`compare_results.py`)
 
-After running `base_model_eval.py` and `metrics.py` for a model:
+`compare_results.py` auto-discovers every model folder under `results/`, loads both the
+fine-tuned and base-model metrics, and produces a full comparison in one command.
 
-```python
-import pandas as pd
+### Quick start
 
-model = "Llama-3.2-3B"   # or Qwen2.5-1.5B, Phi-4-mini
+```bash
+# Compare all discovered models (reads Fine-Tune/results/ and Base-LLM-Evaluation/results/)
+python compare_results.py
 
-base  = pd.read_csv(f"../Base-LLM-Evaluation/results/{model}/base_model_metrics_summary.csv")
-tuned = pd.read_csv(f"results/{model}/metrics_summary.csv")
+# Print table only — no files written
+python compare_results.py --no-save
 
-comp = base.merge(tuned, on="Metric", suffixes=("_base", "_finetuned"))
-print(comp.to_string(index=False))
+# Restrict to specific models
+python compare_results.py --models Llama-3.2-3B Phi-4-mini
 ```
+
+### Output files (written to `results/`)
+
+| File | Description |
+|---|---|
+| `comparison_summary.csv` | Wide table: all 10 metrics × (base / fine-tuned / Δ) per model |
+| `comparison.png` | Grouped bar chart across all 10 metrics |
+| `confusion_matrix_comparison.png` | 3 × 2 subplot grid — per-model confusion matrices, base vs fine-tuned |
+| `compare_run.log` | Execution log |
+
+### CLI flags
+
+| Flag | Default | Description |
+|---|---|---|
+| `--results-dir` | `results` | Fine-Tune results directory |
+| `--base-results-dir` | `../Base-LLM-Evaluation/results` | Base-model results directory |
+| `--output-dir` | `results` | Where to write comparison outputs |
+| `--models` | *(all discovered)* | Restrict to specific model names (space-separated) |
+| `--no-save` | off | Print table only; skip CSV and PNG output |
 
 ---
 
