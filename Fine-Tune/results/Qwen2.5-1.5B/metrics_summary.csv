@@ -1,0 +1,12 @@
+Metric,Score
+Model,Qwen2.5-1.5B (fine-tuned)
+Accuracy,0.8993965679803885
+Precision (Macro),0.5911685127358138
+Precision (Weighted),0.9669547723498833
+Recall (Macro),0.5871802983458952
+Recall (Weighted),0.8993965679803885
+F1-Score (Macro),0.5881091472533017
+F1-Score (Weighted),0.9314587175277732
+Exact Match Accuracy,0.2780501602866302
+Avg Partial Match,0.8461641298641862
+Avg F1 (Word-level),0.8188463979976817

@@ -1,0 +1,682 @@
+2026-05-25 13:11:16 | INFO     | Log file: /home/students/Desktop/projects/Mitre-Dataset/Fine-Tune/results/Llama-3.2-3B/metrics_run.log
+2026-05-25 13:11:16 | INFO     | PID 505675 — metrics.py starting
+2026-05-25 13:11:16 | INFO     | Model        : Llama-3.2-3B  (models/Llama-3.2-3B/)
+2026-05-25 13:11:16 | INFO     | Output dir   : results/Llama-3.2-3B
+2026-05-25 13:11:16 | INFO     | Python 3.12.3  |  cwd: /home/students/Desktop/projects/Mitre-Dataset/Fine-Tune
+2026-05-25 13:11:16 | INFO     | ======================================================================
+2026-05-25 13:11:16 | INFO     | CONFIGURATION
+2026-05-25 13:11:16 | INFO     | ======================================================================
+2026-05-25 13:11:16 | INFO     |   kaggle_dataset              : abirashab/train-test-val
+2026-05-25 13:11:16 | INFO     |   data_path                   : None
+2026-05-25 13:11:16 | INFO     |   splits                      : ['test']
+2026-05-25 13:11:16 | INFO     |   train_file                  : train.jsonl
+2026-05-25 13:11:16 | INFO     |   val_file                    : val.jsonl
+2026-05-25 13:11:16 | INFO     |   test_file                   : test.jsonl
+2026-05-25 13:11:16 | INFO     |   eval_limit                  : None
+2026-05-25 13:11:16 | INFO     |   suspicious_ratio            : 0.3
+2026-05-25 13:11:16 | INFO     |   prioritize_shortest         : True
+2026-05-25 13:11:16 | INFO     |   max_new_tokens              : 512
+2026-05-25 13:11:16 | INFO     |   temperature                 : 0.7
+2026-05-25 13:11:16 | INFO     |   do_sample                   : True
+2026-05-25 13:11:16 | INFO     |   top_p                       : 0.9
+2026-05-25 13:11:16 | INFO     |   max_input_chars             : 6000
+2026-05-25 13:11:16 | INFO     |   max_length_tokens           : 3072
+2026-05-25 13:11:16 | INFO     |   show_examples               : 10
+2026-05-25 13:11:16 | INFO     |   save_results                : True
+2026-05-25 13:11:16 | INFO     |   output_dir                  : results/Llama-3.2-3B
+2026-05-25 13:11:16 | INFO     |   checkpoint_interval         : 50
+2026-05-25 13:11:16 | INFO     |   no_resume                   : False
+2026-05-25 13:11:16 | INFO     |   model_key                   : llama
+2026-05-25 13:11:16 | INFO     |   model_name                  : meta-llama/Llama-3.2-3B-Instruct
+2026-05-25 13:11:16 | INFO     |   display_name                : Llama-3.2-3B
+2026-05-25 13:11:16 | INFO     |   model_path                  : models/Llama-3.2-3B/
+2026-05-25 13:11:16 | INFO     | ======================================================================
+2026-05-25 13:11:16 | INFO     | STEP 1 — Loading fine-tuned model
+2026-05-25 13:11:16 | INFO     | ======================================================================
+2026-05-25 13:11:16 | INFO     | Model path    : models/Llama-3.2-3B/
+2026-05-25 13:11:16 | INFO     | Display name  : Llama-3.2-3B
+2026-05-25 13:11:16 | INFO     | Chat template : llama3
+2026-05-25 13:11:16 | INFO     | torch_dtype   : torch.bfloat16
+2026-05-25 13:11:17 | INFO     | HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-25 13:11:17 | INFO     | HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-25 13:11:18 | INFO     | HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/generation_config.json "HTTP/1.1 200 OK"
+2026-05-25 13:11:20 | INFO     | GPU memory after load: 6.00 GB
+2026-05-25 13:11:20 | INFO     | Model device: cuda:0
+2026-05-25 13:11:20 | INFO     | ======================================================================
+2026-05-25 13:11:20 | INFO     | STEP 2 — Loading dataset
+2026-05-25 13:11:20 | INFO     | ======================================================================
+2026-05-25 13:11:20 | INFO     | Downloading Kaggle dataset: abirashab/train-test-val
+2026-05-25 13:11:20 | INFO     | (Cached after first download — subsequent runs are instant.)
+2026-05-25 13:11:20 | INFO     | Dataset available at: /home/students/.cache/kagglehub/datasets/abirashab/train-test-val/versions/1
+2026-05-25 13:11:20 | INFO     |   test  → /home/students/.cache/kagglehub/datasets/abirashab/train-test-val/versions/1/test.jsonl
+2026-05-25 13:11:20 | INFO     | HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/json/json.py "HTTP/1.1 200 OK"
+2026-05-25 13:11:20 | INFO     | Loaded splits: ['test']  —  10,606 examples.  Columns: ['instruction', 'input', 'output']
+2026-05-25 13:11:20 | INFO     | ======================================================================
+2026-05-25 13:11:20 | INFO     | STEP 3 — Stratified sampling
+2026-05-25 13:11:20 | INFO     | ======================================================================
+2026-05-25 13:11:20 | INFO     | Using full dataset: 10,606 examples
+2026-05-25 13:11:20 | INFO     | ======================================================================
+2026-05-25 13:11:20 | INFO     | STEP 4 — Running evaluation
+2026-05-25 13:11:20 | INFO     | ======================================================================
+2026-05-25 13:11:20 | INFO     | Evaluating 10,606 examples  (chat template: llama3)
+2026-05-25 13:11:20 | INFO     | No eval checkpoint found; starting from scratch.
+2026-05-25 13:11:23 | INFO     |   [    1/10606]  0.0 min elapsed  (2.4 sec/example)
+2026-05-25 13:13:18 | INFO     |   [   50/10606]  2.0 min elapsed  (2.3 sec/example)
+2026-05-25 13:13:18 | INFO     |   [checkpoint] 50 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 13:15:29 | INFO     |   [  100/10606]  4.1 min elapsed  (2.5 sec/example)
+2026-05-25 13:15:29 | INFO     |   [checkpoint] 100 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 13:17:18 | INFO     |   [  150/10606]  6.0 min elapsed  (2.4 sec/example)
+2026-05-25 13:17:18 | INFO     |   [checkpoint] 150 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 13:19:06 | INFO     |   [  200/10606]  7.8 min elapsed  (2.3 sec/example)
+2026-05-25 13:19:06 | INFO     |   [checkpoint] 200 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 13:21:21 | INFO     |   [  250/10606]  10.0 min elapsed  (2.4 sec/example)
+2026-05-25 13:21:21 | INFO     |   [checkpoint] 250 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 13:23:08 | INFO     |   [  300/12026-05-25 13:23:43 | INFO     |   [  150/10606]  13.4 min elapsed  (5.4 sec/example)
+2026-05-25 13:23:43 | INFO     |   [checkpoint] 150 samples saved →2026-05-25 13:25:14 | INFO     |   [  350/12026-05-25 13:28:18 | INFO     |   [  200/10606]  18.0 min elapsed  (5.4 sec/example)
+2026-05-25 13:28:18 | INFO     |   [checkpoint] 200 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 13:32:53 | INFO     |   [  250/10606]  22.6 min elapsed  (5.4 sec/example)
+2026-05-25 13:32:53 | INFO     |   [checkpoint] 250 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 13:37:18 | INFO     |   [  300/10606]  27.0 min elapsed  (5.4 sec/example)
+2026-05-25 13:37:18 | INFO     |   [checkpoint] 300 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 13:42:18 | INFO     |   [  350/10606]  32.0 min elapsed  (5.5 sec/example)
+2026-05-25 13:42:18 | INFO     |   [checkpoint] 350 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 13:46:44 | INFO     |   [  400/10606]  36.5 min elapsed  (5.5 sec/example)
+2026-05-25 13:46:44 | INFO     |   [checkpoint] 400 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 13:51:46 | INFO     |   [  450/10606]  41.5 min elapsed  (5.5 sec/example)
+2026-05-25 13:51:46 | INFO     |   [checkpoint] 450 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 13:56:39 | INFO     |   [  500/10606]  46.4 min elapsed  (5.6 sec/example)
+2026-05-25 13:56:39 | INFO     |   [checkpoint] 500 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:01:23 | INFO     |   [  550/10606]  51.1 min elapsed  (5.6 sec/example)
+2026-05-25 14:01:23 | INFO     |   [checkpoint] 550 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:06:05 | INFO     |   [  600/10606]  55.8 min elapsed  (5.6 sec/example)
+2026-05-25 14:06:05 | INFO     |   [checkpoint] 600 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:10:12 | INFO     |   [  650/10606]  59.9 min elapsed  (5.5 sec/example)
+2026-05-25 14:10:12 | INFO     |   [checkpoint] 650 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:15:35 | INFO     |   [  700/10606]  65.3 min elapsed  (5.6 sec/example)
+2026-05-25 14:15:35 | INFO     |   [checkpoint] 700 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:20:19 | INFO     |   [  750/10606]  70.0 min elapsed  (5.6 sec/example)
+2026-05-25 14:20:19 | INFO     |   [checkpoint] 750 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:24:58 | INFO     |   [  800/10606]  74.7 min elapsed  (5.6 sec/example)
+2026-05-25 14:24:58 | INFO     |   [checkpoint] 800 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:29:34 | INFO     |   [  850/10606]  79.3 min elapsed  (5.6 sec/example)
+2026-05-25 14:29:34 | INFO     |   [checkpoint] 850 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:34:44 | INFO     |   [  900/10606]  84.5 min elapsed  (5.6 sec/example)
+2026-05-25 14:34:44 | INFO     |   [checkpoint] 900 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:39:43 | INFO     |   [  950/10606]  89.4 min elapsed  (5.6 sec/example)
+2026-05-25 14:39:43 | INFO     |   [checkpoint] 950 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:44:48 | INFO     |   [ 1000/10606]  94.5 min elapsed  (5.7 sec/example)
+2026-05-25 14:44:48 | INFO     |   [checkpoint] 1000 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:49:39 | INFO     |   [ 1050/10606]  99.4 min elapsed  (5.7 sec/example)
+2026-05-25 14:49:39 | INFO     |   [checkpoint] 1050 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:54:20 | INFO     |   [ 1100/10606]  104.0 min elapsed  (5.7 sec/example)
+2026-05-25 14:54:20 | INFO     |   [checkpoint] 1100 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 14:59:47 | INFO     |   [ 1150/10606]  109.5 min elapsed  (5.7 sec/example)
+2026-05-25 14:59:47 | INFO     |   [checkpoint] 1150 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:04:43 | INFO     |   [ 1200/10606]  114.4 min elapsed  (5.7 sec/example)
+2026-05-25 15:04:43 | INFO     |   [checkpoint] 1200 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:09:27 | INFO     |   [ 1250/10606]  119.2 min elapsed  (5.7 sec/example)
+2026-05-25 15:09:27 | INFO     |   [checkpoint] 1250 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:14:17 | INFO     |   [ 1300/10606]  124.0 min elapsed  (5.7 sec/example)
+2026-05-25 15:14:17 | INFO     |   [checkpoint] 1300 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:18:59 | INFO     |   [ 1350/10606]  128.7 min elapsed  (5.7 sec/example)
+2026-05-25 15:18:59 | INFO     |   [checkpoint] 1350 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:24:12 | INFO     |   [ 1400/10606]  133.9 min elapsed  (5.7 sec/example)
+2026-05-25 15:24:12 | INFO     |   [checkpoint] 1400 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:28:44 | INFO     |   [ 1450/10606]  138.5 min elapsed  (5.7 sec/example)
+2026-05-25 15:28:44 | INFO     |   [checkpoint] 1450 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:33:49 | INFO     |   [ 1500/10606]  143.5 min elapsed  (5.7 sec/example)
+2026-05-25 15:33:49 | INFO     |   [checkpoint] 1500 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:38:26 | INFO     |   [ 1550/10606]  148.2 min elapsed  (5.7 sec/example)
+2026-05-25 15:38:26 | INFO     |   [checkpoint] 1550 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:43:21 | INFO     |   [ 1600/10606]  153.1 min elapsed  (5.7 sec/example)
+2026-05-25 15:43:21 | INFO     |   [checkpoint] 1600 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:48:43 | INFO     |   [ 1650/10606]  158.4 min elapsed  (5.8 sec/example)
+2026-05-25 15:48:43 | INFO     |   [checkpoint] 1650 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:54:20 | INFO     |   [ 1700/10606]  164.1 min elapsed  (5.8 sec/example)
+2026-05-25 15:54:20 | INFO     |   [checkpoint] 1700 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 15:59:00 | INFO     |   [ 1750/10606]  168.7 min elapsed  (5.8 sec/example)
+2026-05-25 15:59:00 | INFO     |   [checkpoint] 1750 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:03:59 | INFO     |   [ 1800/10606]  173.7 min elapsed  (5.8 sec/example)
+2026-05-25 16:03:59 | INFO     |   [checkpoint] 1800 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:09:17 | INFO     |   [ 1850/10606]  179.0 min elapsed  (5.8 sec/example)
+2026-05-25 16:09:17 | INFO     |   [checkpoint] 1850 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:14:16 | INFO     |   [ 1900/10606]  184.0 min elapsed  (5.8 sec/example)
+2026-05-25 16:14:16 | INFO     |   [checkpoint] 1900 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:18:58 | INFO     |   [ 1950/10606]  188.7 min elapsed  (5.8 sec/example)
+2026-05-25 16:18:58 | INFO     |   [checkpoint] 1950 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:23:43 | INFO     |   [ 2000/10606]  193.4 min elapsed  (5.8 sec/example)
+2026-05-25 16:23:43 | INFO     |   [checkpoint] 2000 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:29:06 | INFO     |   [ 2050/10606]  198.8 min elapsed  (5.8 sec/example)
+2026-05-25 16:29:06 | INFO     |   [checkpoint] 2050 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:33:38 | INFO     |   [ 2100/10606]  203.3 min elapsed  (5.8 sec/example)
+2026-05-25 16:33:38 | INFO     |   [checkpoint] 2100 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:38:40 | INFO     |   [ 2150/10606]  208.4 min elapsed  (5.8 sec/example)
+2026-05-25 16:38:40 | INFO     |   [checkpoint] 2150 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:43:40 | INFO     |   [ 2200/10606]  213.4 min elapsed  (5.8 sec/example)
+2026-05-25 16:43:40 | INFO     |   [checkpoint] 2200 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:48:04 | INFO     |   [ 2250/10606]  217.8 min elapsed  (5.8 sec/example)
+2026-05-25 16:48:04 | INFO     |   [checkpoint] 2250 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:52:34 | INFO     |   [ 2300/10606]  222.3 min elapsed  (5.8 sec/example)
+2026-05-25 16:52:34 | INFO     |   [checkpoint] 2300 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 16:57:16 | INFO     |   [ 2350/10606]  227.0 min elapsed  (5.8 sec/example)
+2026-05-25 16:57:16 | INFO     |   [checkpoint] 2350 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:02:32 | INFO     |   [ 2400/10606]  232.3 min elapsed  (5.8 sec/example)
+2026-05-25 17:02:32 | INFO     |   [checkpoint] 2400 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:07:46 | INFO     |   [ 2450/10606]  237.5 min elapsed  (5.8 sec/example)
+2026-05-25 17:07:46 | INFO     |   [checkpoint] 2450 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:12:44 | INFO     |   [ 2500/10606]  242.5 min elapsed  (5.8 sec/example)
+2026-05-25 17:12:44 | INFO     |   [checkpoint] 2500 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:17:16 | INFO     |   [ 2550/10606]  247.0 min elapsed  (5.8 sec/example)
+2026-05-25 17:17:16 | INFO     |   [checkpoint] 2550 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:21:51 | INFO     |   [ 2600/10606]  251.6 min elapsed  (5.8 sec/example)
+2026-05-25 17:21:51 | INFO     |   [checkpoint] 2600 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:26:29 | INFO     |   [ 2650/10606]  256.2 min elapsed  (5.8 sec/example)
+2026-05-25 17:26:29 | INFO     |   [checkpoint] 2650 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:31:00 | INFO     |   [ 2700/10606]  260.7 min elapsed  (5.8 sec/example)
+2026-05-25 17:31:00 | INFO     |   [checkpoint] 2700 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:36:00 | INFO     |   [ 2750/10606]  265.7 min elapsed  (5.8 sec/example)
+2026-05-25 17:36:00 | INFO     |   [checkpoint] 2750 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:40:47 | INFO     |   [ 2800/10606]  270.5 min elapsed  (5.8 sec/example)
+2026-05-25 17:40:48 | INFO     |   [checkpoint] 2800 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:45:49 | INFO     |   [ 2850/10606]  275.5 min elapsed  (5.8 sec/example)
+2026-05-25 17:45:49 | INFO     |   [checkpoint] 2850 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:50:59 | INFO     |   [ 2900/10606]  280.7 min elapsed  (5.8 sec/example)
+2026-05-25 17:50:59 | INFO     |   [checkpoint] 2900 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 17:55:45 | INFO     |   [ 2950/10606]  285.5 min elapsed  (5.8 sec/example)
+2026-05-25 17:55:45 | INFO     |   [checkpoint] 2950 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:00:34 | INFO     |   [ 3000/10606]  290.3 min elapsed  (5.8 sec/example)
+2026-05-25 18:00:34 | INFO     |   [checkpoint] 3000 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:05:12 | INFO     |   [ 3050/10606]  294.9 min elapsed  (5.8 sec/example)
+2026-05-25 18:05:12 | INFO     |   [checkpoint] 3050 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:10:51 | INFO     |   [ 3100/10606]  300.6 min elapsed  (5.8 sec/example)
+2026-05-25 18:10:51 | INFO     |   [checkpoint] 3100 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:15:15 | INFO     |   [ 3150/10606]  305.0 min elapsed  (5.8 sec/example)
+2026-05-25 18:15:15 | INFO     |   [checkpoint] 3150 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:19:48 | INFO     |   [ 3200/10606]  309.5 min elapsed  (5.8 sec/example)
+2026-05-25 18:19:48 | INFO     |   [checkpoint] 3200 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:24:52 | INFO     |   [ 3250/10606]  314.6 min elapsed  (5.8 sec/example)
+2026-05-25 18:24:52 | INFO     |   [checkpoint] 3250 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:29:30 | INFO     |   [ 3300/10606]  319.2 min elapsed  (5.8 sec/example)
+2026-05-25 18:29:30 | INFO     |   [checkpoint] 3300 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:34:23 | INFO     |   [ 3350/10606]  324.1 min elapsed  (5.8 sec/example)
+2026-05-25 18:34:23 | INFO     |   [checkpoint] 3350 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:39:27 | INFO     |   [ 3400/10606]  329.2 min elapsed  (5.8 sec/example)
+2026-05-25 18:39:27 | INFO     |   [checkpoint] 3400 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:44:25 | INFO     |   [ 3450/10606]  334.1 min elapsed  (5.8 sec/example)
+2026-05-25 18:44:25 | INFO     |   [checkpoint] 3450 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:48:56 | INFO     |   [ 3500/10606]  338.7 min elapsed  (5.8 sec/example)
+2026-05-25 18:48:56 | INFO     |   [checkpoint] 3500 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:54:07 | INFO     |   [ 3550/10606]  343.8 min elapsed  (5.8 sec/example)
+2026-05-25 18:54:07 | INFO     |   [checkpoint] 3550 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 18:58:45 | INFO     |   [ 3600/10606]  348.5 min elapsed  (5.8 sec/example)
+2026-05-25 18:58:45 | INFO     |   [checkpoint] 3600 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:03:14 | INFO     |   [ 3650/10606]  352.9 min elapsed  (5.8 sec/example)
+2026-05-25 19:03:14 | INFO     |   [checkpoint] 3650 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:08:16 | INFO     |   [ 3700/10606]  358.0 min elapsed  (5.8 sec/example)
+2026-05-25 19:08:17 | INFO     |   [checkpoint] 3700 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:12:50 | INFO     |   [ 3750/10606]  362.6 min elapsed  (5.8 sec/example)
+2026-05-25 19:12:50 | INFO     |   [checkpoint] 3750 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:17:47 | INFO     |   [ 3800/10606]  367.5 min elapsed  (5.8 sec/example)
+2026-05-25 19:17:47 | INFO     |   [checkpoint] 3800 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:23:18 | INFO     |   [ 3850/10606]  373.0 min elapsed  (5.8 sec/example)
+2026-05-25 19:23:18 | INFO     |   [checkpoint] 3850 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:28:17 | INFO     |   [ 3900/10606]  378.0 min elapsed  (5.8 sec/example)
+2026-05-25 19:28:17 | INFO     |   [checkpoint] 3900 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:32:55 | INFO     |   [ 3950/10606]  382.6 min elapsed  (5.8 sec/example)
+2026-05-25 19:32:55 | INFO     |   [checkpoint] 3950 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:37:35 | INFO     |   [ 4000/10606]  387.3 min elapsed  (5.8 sec/example)
+2026-05-25 19:37:35 | INFO     |   [checkpoint] 4000 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:42:10 | INFO     |   [ 4050/10606]  391.9 min elapsed  (5.8 sec/example)
+2026-05-25 19:42:10 | INFO     |   [checkpoint] 4050 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:46:44 | INFO     |   [ 4100/10606]  396.5 min elapsed  (5.8 sec/example)
+2026-05-25 19:46:44 | INFO     |   [checkpoint] 4100 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:51:45 | INFO     |   [ 4150/10606]  401.5 min elapsed  (5.8 sec/example)
+2026-05-25 19:51:45 | INFO     |   [checkpoint] 4150 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:56:20 | INFO     |   [ 4200/10606]  406.1 min elapsed  (5.8 sec/example)
+2026-05-25 19:56:20 | INFO     |   [checkpoint] 4200 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:00:59 | INFO     |   [ 4250/10606]  410.7 min elapsed  (5.8 sec/example)
+2026-05-25 20:00:59 | INFO     |   [checkpoint] 4250 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:05:55 | INFO     |   [ 4300/10606]  415.6 min elapsed  (5.8 sec/example)
+2026-05-25 20:05:55 | INFO     |   [checkpoint] 4300 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:11:23 | INFO     |   [ 4350/10606]  421.1 min elapsed  (5.8 sec/example)
+2026-05-25 20:11:23 | INFO     |   [checkpoint] 4350 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:16:17 | INFO     |   [ 4400/10606]  426.0 min elapsed  (5.8 sec/example)
+2026-05-25 20:16:17 | INFO     |   [checkpoint] 4400 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:20:41 | INFO     |   [ 4450/10606]  430.4 min elapsed  (5.8 sec/example)
+2026-05-25 20:20:41 | INFO     |   [checkpoint] 4450 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:25:45 | INFO     |   [ 4500/10606]  435.5 min elapsed  (5.8 sec/example)
+2026-05-25 20:25:45 | INFO     |   [checkpoint] 4500 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:30:19 | INFO     |   [ 4550/10606]  440.0 min elapsed  (5.8 sec/example)
+2026-05-25 20:30:20 | INFO     |   [checkpoint] 4550 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:35:24 | INFO     |   [ 4600/10606]  445.1 min elapsed  (5.8 sec/example)
+2026-05-25 20:35:24 | INFO     |   [checkpoint] 4600 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:40:00 | INFO     |   [ 4650/10606]  449.7 min elapsed  (5.8 sec/example)
+2026-05-25 20:40:00 | INFO     |   [checkpoint] 4650 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:44:39 | INFO     |   [ 4700/10606]  454.4 min elapsed  (5.8 sec/example)
+2026-05-25 20:44:39 | INFO     |   [checkpoint] 4700 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:49:10 | INFO     |   [ 4750/10606]  458.9 min elapsed  (5.8 sec/example)
+2026-05-25 20:49:10 | INFO     |   [checkpoint] 4750 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:54:12 | INFO     |   [ 4800/10606]  463.9 min elapsed  (5.8 sec/example)
+2026-05-25 20:54:12 | INFO     |   [checkpoint] 4800 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:58:45 | INFO     |   [ 4850/10606]  468.5 min elapsed  (5.8 sec/example)
+2026-05-25 20:58:46 | INFO     |   [checkpoint] 4850 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:03:31 | INFO     |   [ 4900/10606]  473.2 min elapsed  (5.8 sec/example)
+2026-05-25 21:03:31 | INFO     |   [checkpoint] 4900 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:08:27 | INFO     |   [ 4950/10606]  478.2 min elapsed  (5.8 sec/example)
+2026-05-25 21:08:27 | INFO     |   [checkpoint] 4950 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:12:45 | INFO     |   [ 5000/10606]  482.5 min elapsed  (5.8 sec/example)
+2026-05-25 21:12:46 | INFO     |   [checkpoint] 5000 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:18:04 | INFO     |   [ 5050/10606]  487.8 min elapsed  (5.8 sec/example)
+2026-05-25 21:18:04 | INFO     |   [checkpoint] 5050 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:23:19 | INFO     |   [ 5100/10606]  493.0 min elapsed  (5.8 sec/example)
+2026-05-25 21:23:19 | INFO     |   [checkpoint] 5100 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:27:54 | INFO     |   [ 5150/10606]  497.6 min elapsed  (5.8 sec/example)
+2026-05-25 21:27:54 | INFO     |   [checkpoint] 5150 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:32:46 | INFO     |   [ 5200/10606]  502.5 min elapsed  (5.8 sec/example)
+2026-05-25 21:32:46 | INFO     |   [checkpoint] 5200 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:36:50 | INFO     |   [ 5250/10606]  506.6 min elapsed  (5.8 sec/example)
+2026-05-25 21:36:50 | INFO     |   [checkpoint] 5250 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:42:14 | INFO     |   [ 5300/10606]  511.9 min elapsed  (5.8 sec/example)
+2026-05-25 21:42:14 | INFO     |   [checkpoint] 5300 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:47:33 | INFO     |   [ 5350/10606]  517.3 min elapsed  (5.8 sec/example)
+2026-05-25 21:47:33 | INFO     |   [checkpoint] 5350 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:52:26 | INFO     |   [ 5400/10606]  522.2 min elapsed  (5.8 sec/example)
+2026-05-25 21:52:26 | INFO     |   [checkpoint] 5400 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:56:45 | INFO     |   [ 5450/10606]  526.5 min elapsed  (5.8 sec/example)
+2026-05-25 21:56:45 | INFO     |   [checkpoint] 5450 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:01:50 | INFO     |   [ 5500/10606]  531.5 min elapsed  (5.8 sec/example)
+2026-05-25 22:01:50 | INFO     |   [checkpoint] 5500 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:06:14 | INFO     |   [ 5550/10606]  536.0 min elapsed  (5.8 sec/example)
+2026-05-25 22:06:14 | INFO     |   [checkpoint] 5550 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:10:36 | INFO     |   [ 5600/10606]  540.3 min elapsed  (5.8 sec/example)
+2026-05-25 22:10:36 | INFO     |   [checkpoint] 5600 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:15:37 | INFO     |   [ 5650/10606]  545.3 min elapsed  (5.8 sec/example)
+2026-05-25 22:15:37 | INFO     |   [checkpoint] 5650 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:20:40 | INFO     |   [ 5700/10606]  550.4 min elapsed  (5.8 sec/example)
+2026-05-25 22:20:41 | INFO     |   [checkpoint] 5700 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:24:41 | INFO     |   [ 5750/10606]  554.4 min elapsed  (5.8 sec/example)
+2026-05-25 22:24:41 | INFO     |   [checkpoint] 5750 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:29:24 | INFO     |   [ 5800/10606]  559.1 min elapsed  (5.8 sec/example)
+2026-05-25 22:29:24 | INFO     |   [checkpoint] 5800 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:34:34 | INFO     |   [ 5850/10606]  564.3 min elapsed  (5.8 sec/example)
+2026-05-25 22:34:34 | INFO     |   [checkpoint] 5850 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:40:05 | INFO     |   [ 5900/10606]  569.8 min elapsed  (5.8 sec/example)
+2026-05-25 22:40:06 | INFO     |   [checkpoint] 5900 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:44:40 | INFO     |   [ 5950/10606]  574.4 min elapsed  (5.8 sec/example)
+2026-05-25 22:44:40 | INFO     |   [checkpoint] 5950 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:49:52 | INFO     |   [ 6000/10606]  579.6 min elapsed  (5.8 sec/example)
+2026-05-25 22:49:52 | INFO     |   [checkpoint] 6000 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:54:41 | INFO     |   [ 6050/10606]  584.4 min elapsed  (5.8 sec/example)
+2026-05-25 22:54:41 | INFO     |   [checkpoint] 6050 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+6-05-25 19:02:30 | INFO     |   [ 6100/10606]  351.9 min elapsed  (3.5 sec/example)
+2026-05-25 19:02:30 | INFO     |   [checkpoint] 6100 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:05:23 | INFO     |   [ 6150/10606]  354.7 min elapsed  (3.5 sec/example)
+2026-05-25 19:05:23 | INFO     |   [checkpoint] 6150 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:07:54 | INFO     |   [ 6200/10606]  357.3 min elapsed  (3.5 sec/example)
+2026-05-25 19:07:54 | INFO     |   [checkpoint] 6200 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:11:03 | INFO     |   [ 6250/10606]  360.4 min elapsed  (3.5 sec/example)
+2026-05-25 19:11:03 | INFO     |   [checkpoint] 6250 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:13:34 | INFO     |   [ 6300/10606]  362.9 min elapsed  (3.5 sec/example)
+2026-05-25 19:13:34 | INFO     |   [checkpoint] 6300 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:16:07 | INFO     |   [ 6350/10606]  365.5 min elapsed  (3.5 sec/example)
+2026-05-25 19:16:07 | INFO     |   [checkpoint] 6350 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:19:49 | INFO     |   [ 6400/10606]  369.2 min elapsed  (3.5 sec/example)
+2026-05-25 19:19:49 | INFO     |   [checkpoint] 6400 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:22:27 | INFO     |   [ 6450/10606]  371.8 min elapsed  (3.5 sec/example)
+2026-05-25 19:22:27 | INFO     |   [checkpoint] 6450 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:25:45 | INFO     |   [ 6500/10606]  375.1 min elapsed  (3.5 sec/example)
+2026-05-25 19:25:45 | INFO     |   [checkpoint] 6500 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:28:46 | INFO     |   [ 6550/10606]  378.1 min elapsed  (3.5 sec/example)
+2026-05-25 19:28:46 | INFO     |   [checkpoint] 6550 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:31:28 | INFO     |   [ 6600/10606]  380.8 min elapsed  (3.5 sec/example)
+2026-05-25 19:31:28 | INFO     |   [checkpoint] 6600 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:34:16 | INFO     |   [ 6650/10606]  383.6 min elapsed  (3.5 sec/example)
+2026-05-25 19:34:16 | INFO     |   [checkpoint] 6650 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:37:14 | INFO     |   [ 6700/10606]  386.6 min elapsed  (3.5 sec/example)
+2026-05-25 19:37:14 | INFO     |   [checkpoint] 6700 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:40:00 | INFO     |   [ 6750/10606]  389.4 min elapsed  (3.5 sec/example)
+2026-05-25 19:40:00 | INFO     |   [checkpoint] 6750 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:42:36 | INFO     |   [ 6800/10606]  392.0 min elapsed  (3.5 sec/example)
+2026-05-25 19:42:36 | INFO     |   [checkpoint] 6800 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:45:03 | INFO     |   [ 6850/10606]  394.4 min elapsed  (3.5 sec/example)
+2026-05-25 19:45:03 | INFO     |   [checkpoint] 6850 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:47:57 | INFO     |   [ 6900/10606]  397.3 min elapsed  (3.5 sec/example)
+2026-05-25 19:47:57 | INFO     |   [checkpoint] 6900 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:50:24 | INFO     |   [ 6950/10606]  399.8 min elapsed  (3.5 sec/example)
+2026-05-25 19:50:24 | INFO     |   [checkpoint] 6950 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:53:06 | INFO     |   [ 7000/10606]  402.5 min elapsed  (3.4 sec/example)
+2026-05-25 19:53:06 | INFO     |   [checkpoint] 7000 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:56:11 | INFO     |   [ 7050/10606]  405.6 min elapsed  (3.5 sec/example)
+2026-05-25 19:56:12 | INFO     |   [checkpoint] 7050 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 19:59:10 | INFO     |   [ 7100/10606]  408.5 min elapsed  (3.5 sec/example)
+2026-05-25 19:59:10 | INFO     |   [checkpoint] 7100 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:02:04 | INFO     |   [ 7150/10606]  411.4 min elapsed  (3.5 sec/example)
+2026-05-25 20:02:04 | INFO     |   [checkpoint] 7150 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:05:24 | INFO     |   [ 7200/10606]  414.8 min elapsed  (3.5 sec/example)
+2026-05-25 20:05:24 | INFO     |   [checkpoint] 7200 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:07:56 | INFO     |   [ 7250/10606]  417.3 min elapsed  (3.5 sec/example)
+2026-05-25 20:07:56 | INFO     |   [checkpoint] 7250 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:10:59 | INFO     |   [ 7300/10606]  420.3 min elapsed  (3.5 sec/example)
+2026-05-25 20:10:59 | INFO     |   [checkpoint] 7300 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:13:15 | INFO     |   [ 7350/10606]  422.6 min elapsed  (3.4 sec/example)
+2026-05-25 20:13:15 | INFO     |   [checkpoint] 7350 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:16:02 | INFO     |   [ 7400/10606]  425.4 min elapsed  (3.4 sec/example)
+2026-05-25 20:16:03 | INFO     |   [checkpoint] 7400 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:18:40 | INFO     |   [ 7450/10606]  428.0 min elapsed  (3.4 sec/example)
+2026-05-25 20:18:40 | INFO     |   [checkpoint] 7450 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:21:42 | INFO     |   [ 7500/10606]  431.1 min elapsed  (3.4 sec/example)
+2026-05-25 20:21:42 | INFO     |   [checkpoint] 7500 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:25:18 | INFO     |   [ 7550/10606]  434.7 min elapsed  (3.5 sec/example)
+2026-05-25 20:25:18 | INFO     |   [checkpoint] 7550 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:29:02 | INFO     |   [ 7600/10606]  438.4 min elapsed  (3.5 sec/example)
+2026-05-25 20:29:02 | INFO     |   [checkpoint] 7600 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:31:31 | INFO     |   [ 7650/10606]  440.9 min elapsed  (3.5 sec/example)
+2026-05-25 20:31:31 | INFO     |   [checkpoint] 7650 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:34:41 | INFO     |   [ 7700/10606]  444.0 min elapsed  (3.5 sec/example)
+2026-05-25 20:34:41 | INFO     |   [checkpoint] 7700 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:37:49 | INFO     |   [ 7750/10606]  447.2 min elapsed  (3.5 sec/example)
+2026-05-25 20:37:49 | INFO     |   [checkpoint] 7750 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:40:03 | INFO     |   [ 7800/10606]  449.4 min elapsed  (3.5 sec/example)
+2026-05-25 20:40:03 | INFO     |   [checkpoint] 7800 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:43:04 | INFO     |   [ 7850/10606]  452.4 min elapsed  (3.5 sec/example)
+2026-05-25 20:43:04 | INFO     |   [checkpoint] 7850 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:46:00 | INFO     |   [ 7900/10606]  455.4 min elapsed  (3.5 sec/example)
+2026-05-25 20:46:00 | INFO     |   [checkpoint] 7900 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:48:57 | INFO     |   [ 7950/10606]  458.3 min elapsed  (3.5 sec/example)
+2026-05-25 20:48:57 | INFO     |   [checkpoint] 7950 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:52:02 | INFO     |   [ 8000/10606]  461.4 min elapsed  (3.5 sec/example)
+2026-05-25 20:52:02 | INFO     |   [checkpoint] 8000 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:55:05 | INFO     |   [ 8050/10606]  464.5 min elapsed  (3.5 sec/example)
+2026-05-25 20:55:06 | INFO     |   [checkpoint] 8050 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:57:40 | INFO     |   [ 8100/10606]  467.0 min elapsed  (3.5 sec/example)
+2026-05-25 20:57:40 | INFO     |   [checkpoint] 8100 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:59:53 | INFO     |   [ 8150/10606]  469.2 min elapsed  (3.5 sec/example)
+2026-05-25 20:59:54 | INFO     |   [checkpoint] 8150 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:02:53 | INFO     |   [ 8200/10606]  472.2 min elapsed  (3.5 sec/example)
+2026-05-25 21:02:53 | INFO     |   [checkpoint] 8200 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:05:22 | INFO     |   [ 8250/10606]  474.7 min elapsed  (3.5 sec/example)
+2026-05-25 21:05:22 | INFO     |   [checkpoint] 8250 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:08:51 | INFO     |   [ 8300/10606]  478.2 min elapsed  (3.5 sec/example)
+2026-05-25 21:08:51 | INFO     |   [checkpoint] 8300 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:12:07 | INFO     |   [ 8350/10606]  481.5 min elapsed  (3.5 sec/example)
+2026-05-25 21:12:07 | INFO     |   [checkpoint] 8350 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:15:01 | INFO     |   [ 8400/10606]  484.4 min elapsed  (3.5 sec/example)
+2026-05-25 21:15:01 | INFO     |   [checkpoint] 8400 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:17:46 | INFO     |   [ 8450/10606]  487.1 min elapsed  (3.5 sec/example)
+2026-05-25 21:17:46 | INFO     |   [checkpoint] 8450 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:21:44 | INFO     |   [ 8500/10606]  491.1 min elapsed  (3.5 sec/example)
+2026-05-25 21:21:44 | INFO     |   [checkpoint] 8500 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:24:15 | INFO     |   [ 8550/10606]  493.6 min elapsed  (3.5 sec/example)
+2026-05-25 21:24:15 | INFO     |   [checkpoint] 8550 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:27:17 | INFO     |   [ 8600/10606]  496.6 min elapsed  (3.5 sec/example)
+2026-05-25 21:27:17 | INFO     |   [checkpoint] 8600 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:30:02 | INFO     |   [ 8650/10606]  499.4 min elapsed  (3.5 sec/example)
+2026-05-25 21:30:03 | INFO     |   [checkpoint] 8650 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:33:04 | INFO     |   [ 8700/10606]  502.4 min elapsed  (3.5 sec/example)
+2026-05-25 21:33:04 | INFO     |   [checkpoint] 8700 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:35:33 | INFO     |   [ 8750/10606]  504.9 min elapsed  (3.5 sec/example)
+2026-05-25 21:35:33 | INFO     |   [checkpoint] 8750 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:38:37 | INFO     |   [ 8800/10606]  508.0 min elapsed  (3.5 sec/example)
+2026-05-25 21:38:37 | INFO     |   [checkpoint] 8800 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:41:44 | INFO     |   [ 8850/10606]  511.1 min elapsed  (3.5 sec/example)
+2026-05-25 21:41:44 | INFO     |   [checkpoint] 8850 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:44:19 | INFO     |   [ 8900/10606]  513.7 min elapsed  (3.5 sec/example)
+2026-05-25 21:44:19 | INFO     |   [checkpoint] 8900 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:47:15 | INFO     |   [ 8950/10606]  516.6 min elapsed  (3.5 sec/example)
+2026-05-25 21:47:15 | INFO     |   [checkpoint] 8950 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:50:19 | INFO     |   [ 9000/10606]  519.7 min elapsed  (3.5 sec/example)
+2026-05-25 21:50:19 | INFO     |   [checkpoint] 9000 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:52:57 | INFO     |   [ 9050/10606]  522.3 min elapsed  (3.5 sec/example)
+2026-05-25 21:52:58 | INFO     |   [checkpoint] 9050 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:55:51 | INFO     |   [ 9100/10606]  525.2 min elapsed  (3.5 sec/example)
+2026-05-25 21:55:51 | INFO     |   [checkpoint] 9100 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 21:58:32 | INFO     |   [ 9150/10606]  527.9 min elapsed  (3.5 sec/example)
+2026-05-25 21:58:32 | INFO     |   [checkpoint] 9150 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:01:16 | INFO     |   [ 9200/10606]  530.6 min elapsed  (3.5 sec/example)
+2026-05-25 22:01:16 | INFO     |   [checkpoint] 9200 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:04:07 | INFO     |   [ 9250/10606]  533.5 min elapsed  (3.5 sec/example)
+2026-05-25 22:04:07 | INFO     |   [checkpoint] 9250 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:07:01 | INFO     |   [ 9300/10606]  536.4 min elapsed  (3.5 sec/example)
+2026-05-25 22:07:01 | INFO     |   [checkpoint] 9300 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:10:18 | INFO     |   [ 9350/10606]  539.7 min elapsed  (3.5 sec/example)
+2026-05-25 22:10:18 | INFO     |   [checkpoint] 9350 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:13:24 | INFO     |   [ 9400/10606]  542.8 min elapsed  (3.5 sec/example)
+2026-05-25 22:13:24 | INFO     |   [checkpoint] 9400 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:16:07 | INFO     |   [ 9450/10606]  545.5 min elapsed  (3.5 sec/example)
+2026-05-25 22:16:07 | INFO     |   [checkpoint] 9450 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:18:39 | INFO     |   [ 9500/10606]  548.0 min elapsed  (3.5 sec/example)
+2026-05-25 22:18:40 | INFO     |   [checkpoint] 9500 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:21:22 | INFO     |   [ 9550/10606]  550.7 min elapsed  (3.5 sec/example)
+2026-05-25 22:21:22 | INFO     |   [checkpoint] 9550 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:24:27 | INFO     |   [ 9600/10606]  553.8 min elapsed  (3.5 sec/example)
+2026-05-25 22:24:27 | INFO     |   [checkpoint] 9600 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:27:04 | INFO     |   [ 9650/10606]  556.4 min elapsed  (3.5 sec/example)
+2026-05-25 22:27:04 | INFO     |   [checkpoint] 9650 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:30:06 | INFO     |   [ 9700/10606]  559.5 min elapsed  (3.5 sec/example)
+2026-05-25 22:30:06 | INFO     |   [checkpoint] 9700 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:33:12 | INFO     |   [ 9750/10606]  562.6 min elapsed  (3.5 sec/example)
+2026-05-25 22:33:12 | INFO     |   [checkpoint] 9750 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:35:53 | INFO     |   [ 9800/10606]  565.3 min elapsed  (3.5 sec/example)
+2026-05-25 22:35:54 | INFO     |   [checkpoint] 9800 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:39:08 | INFO     |   [ 9850/10606]  568.5 min elapsed  (3.5 sec/example)
+2026-05-25 22:39:08 | INFO     |   [checkpoint] 9850 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:42:13 | INFO     |   [ 9900/10606]  571.6 min elapsed  (3.5 sec/example)
+2026-05-25 22:42:13 | INFO     |   [checkpoint] 9900 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:45:07 | INFO     |   [ 9950/10606]  574.5 min elapsed  (3.5 sec/example)
+2026-05-25 22:45:08 | INFO     |   [checkpoint] 9950 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:48:12 | INFO     |   [10000/10606]  577.6 min elapsed  (3.5 sec/example)
+2026-05-25 22:48:13 | INFO     |   [checkpoint] 10000 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:51:10 | INFO     |   [10050/10606]  580.5 min elapsed  (3.5 sec/example)
+2026-05-25 22:51:10 | INFO     |   [checkpoint] 10050 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:54:22 | INFO     |   [10100/10606]  583.7 min elapsed  (3.5 sec/example)
+2026-05-25 22:54:22 | INFO     |   [checkpoint] 10100 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 22:57:04 | INFO     |   [10150/10606]  586.4 min elapsed  (3.5 sec/example)
+2026-05-25 22:57:04 | INFO     |   [checkpoint] 10150 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+in elapsed  (2.5 sec/example)
+2026-05-25 20:30:00 | INFO     |   [checkpoint] 10350 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:31:53 | INFO     |   [10400/10606]  440.5 min elapsed  (2.5 sec/example)
+2026-05-25 20:31:53 | INFO     |   [checkpoint] 10400 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:33:56 | INFO     |   [10450/10606]  442.6 min elapsed  (2.5 sec/example)
+2026-05-25 20:33:57 | INFO     |   [checkpoint] 10450 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:36:04 | INFO     |   [10500/10606]  444.7 min elapsed  (2.5 sec/example)
+2026-05-25 20:36:04 | INFO     |   [checkpoint] 10500 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:37:57 | INFO     |   [10550/10606]  446.6 min elapsed  (2.5 sec/example)
+2026-05-25 20:37:58 | INFO     |   [checkpoint] 10550 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:39:52 | INFO     |   [10600/10606]  448.5 min elapsed  (2.5 sec/example)
+2026-05-25 20:39:52 | INFO     |   [checkpoint] 10600 samples saved → results/Llama-3.2-3B/eval_checkpoint.json
+2026-05-25 20:40:05 | INFO     | Checkpoint removed after successful completion.
+2026-05-25 20:40:05 | INFO     | ------------------------------------------------------------
+2026-05-25 20:40:05 | INFO     | Example 1/10
+2026-05-25 20:40:05 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 909, "start_time": "2025-09-18T17:40:2...
+2026-05-25 20:40:05 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-25 20:40:05 | INFO     | ------------------------------------------------------------
+2026-05-25 20:40:05 | INFO     | Example 2/10
+2026-05-25 20:40:05 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 1668, "start_time": "2025-10-25T11:18:...
+2026-05-25 20:40:05 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-25 20:40:05 | INFO     | ------------------------------------------------------------
+2026-05-25 20:40:05 | INFO     | Example 3/10
+2026-05-25 20:40:05 | INFO     |   Input     : {"metadata": {"session_id": "20251025_094500", "chunk_index": 45, "start_time": "2025-10-25T03:45:42...
+2026-05-25 20:40:05 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-25 20:40:05 | INFO     | ------------------------------------------------------------
+2026-05-25 20:40:05 | INFO     | Example 4/10
+2026-05-25 20:40:05 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 731, "start_time": "2025-10-25T11:09:0...
+2026-05-25 20:40:05 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-25 20:40:05 | INFO     | ------------------------------------------------------------
+2026-05-25 20:40:05 | INFO     | Example 5/10
+2026-05-25 20:40:05 | INFO     |   Input     : {"metadata": {"session_id": "20251026_065700", "chunk_index": 1517, "start_time": "2025-10-26T01:12:...
+2026-05-25 20:40:05 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-25 20:40:05 | INFO     | ------------------------------------------------------------
+2026-05-25 20:40:05 | INFO     | Example 6/10
+2026-05-25 20:40:05 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 1344, "start_time": "2025-09-18T17:44:...
+2026-05-25 20:40:05 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (5 Network, 2 Process). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard netwo...
+2026-05-25 20:40:05 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (5 Network, 2 Process). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard netwo...
+2026-05-25 20:40:05 | INFO     |   Scores    : exact=0  partial=0.967  word_f1=0.967
+2026-05-25 20:40:05 | INFO     | ------------------------------------------------------------
+2026-05-25 20:40:05 | INFO     | Example 7/10
+2026-05-25 20:40:05 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 56, "start_time": "2025-10-25T11:02:04...
+2026-05-25 20:40:05 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-25 20:40:05 | INFO     | ------------------------------------------------------------
+2026-05-25 20:40:05 | INFO     | Example 8/10
+2026-05-25 20:40:05 | INFO     |   Input     : {"metadata": {"session_id": "20251026_065700", "chunk_index": 940, "start_time": "2025-10-26T01:05:1...
+2026-05-25 20:40:05 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Scores    : exact=0  partial=0.961  word_f1=0.942
+2026-05-25 20:40:05 | INFO     | ------------------------------------------------------------
+2026-05-25 20:40:05 | INFO     | Example 9/10
+2026-05-25 20:40:05 | INFO     |   Input     : {"metadata": {"session_id": "20251025_094500", "chunk_index": 1086, "start_time": "2025-10-25T03:56:...
+2026-05-25 20:40:05 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (6 Network, 1 Process). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard netwo...
+2026-05-25 20:40:05 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Scores    : exact=0  partial=0.689  word_f1=0.724
+2026-05-25 20:40:05 | INFO     | ------------------------------------------------------------
+2026-05-25 20:40:05 | INFO     | Example 10/10
+2026-05-25 20:40:05 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 329, "start_time": "2025-09-18T17:36:3...
+2026-05-25 20:40:05 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-25 20:40:05 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-25 20:40:05 | INFO     | Evaluation complete: 448.74 min total  (2.54 sec/example)
+2026-05-25 20:40:05 | INFO     | ======================================================================
+2026-05-25 20:40:05 | INFO     | STEP 5 — Computing classification metrics
+2026-05-25 20:40:05 | INFO     | ======================================================================
+2026-05-25 20:40:05 | INFO     | Labels found: ['NORMAL', 'SUSPICIOUS', 'UNKNOWN']
+2026-05-25 20:40:05 | INFO     | True  dist : {'NORMAL': 9648, 'SUSPICIOUS': 958}
+2026-05-25 20:40:05 | INFO     | Pred  dist : {'NORMAL': 10047, 'SUSPICIOUS': 549, 'UNKNOWN': 10}
+2026-05-25 20:40:05 | INFO     | ======================================================================
+2026-05-25 20:40:05 | INFO     | BASIC STATISTICS
+2026-05-25 20:40:05 | INFO     | ======================================================================
+2026-05-25 20:40:05 | INFO     |   Total examples    : 10,606
+2026-05-25 20:40:05 | INFO     |   Inference time    : 448.74 min
+2026-05-25 20:40:05 | INFO     |   Time per example  : 2.54 sec
+2026-05-25 20:40:05 | INFO     |   Input length — min:564  max:26,480  mean:4,347  median:3,070
+2026-05-25 20:40:05 | INFO     | ======================================================================
+2026-05-25 20:40:05 | INFO     | STATUS CLASSIFICATION METRICS
+2026-05-25 20:40:05 | INFO     | ======================================================================
+2026-05-25 20:40:05 | INFO     |   Accuracy             : 0.9282  (92.82%)
+2026-05-25 20:40:05 | INFO     |   Precision (Macro)    : 0.5436
+2026-05-25 20:40:05 | INFO     |   Precision (Weighted) : 0.9194
+2026-05-25 20:40:05 | INFO     |   Recall    (Macro)    : 0.4586
+2026-05-25 20:40:05 | INFO     |   Recall    (Weighted) : 0.9282
+2026-05-25 20:40:05 | INFO     |   F1-Score  (Macro)    : 0.4877
+2026-05-25 20:40:05 | INFO     |   F1-Score  (Weighted) : 0.9198
+2026-05-25 20:40:05 | INFO     | WORD-LEVEL METRICS
+2026-05-25 20:40:05 | INFO     |   Exact Match Accuracy : 0.2928  (29.28%)
+2026-05-25 20:40:05 | INFO     |   Avg Partial Match    : 0.8569
+2026-05-25 20:40:05 | INFO     |   Avg Word-level F1    : 0.8490
+2026-05-25 20:40:05 | INFO     | SKLEARN CLASSIFICATION REPORT
+2026-05-25 20:40:05 | INFO     | 
+              precision    recall  f1-score   support
+
+      NORMAL       0.94      0.98      0.96      9648
+  SUSPICIOUS       0.69      0.39      0.50       958
+     UNKNOWN       0.00      0.00      0.00         0
+
+    accuracy                           0.93     10606
+   macro avg       0.54      0.46      0.49     10606
+weighted avg       0.92      0.93      0.92     10606
+
+2026-05-25 20:40:05 | INFO     | ======================================================================
+2026-05-25 20:40:05 | INFO     | STEP 6 — Saving results
+2026-05-25 20:40:05 | INFO     | ======================================================================
+2026-05-25 20:40:06 | INFO     | Per-example results saved : results/Llama-3.2-3B/evaluation_results.csv
+2026-05-25 20:40:06 | INFO     | Metrics summary saved     : results/Llama-3.2-3B/metrics_summary.csv
+2026-05-25 20:40:06 | INFO     | Creating metrics bar chart...
+2026-05-25 20:40:06 | INFO     | Metrics chart saved       : results/Llama-3.2-3B/metrics.png
+2026-05-25 20:40:06 | INFO     | Creating confusion matrix...
+2026-05-25 20:40:06 | INFO     | Confusion matrix saved    : results/Llama-3.2-3B/confusion_matrix.png
+2026-05-25 20:40:06 | INFO     | ======================================================================
+2026-05-25 20:40:06 | INFO     | FINAL EVALUATION SUMMARY — FINE-TUNED MODEL
+2026-05-25 20:40:06 | INFO     | ======================================================================
+2026-05-25 20:40:06 | INFO     |   Model              : Llama-3.2-3B  (fine-tuned from meta-llama/Llama-3.2-3B-Instruct)
+2026-05-25 20:40:06 | INFO     |   Model path         : models/Llama-3.2-3B/
+2026-05-25 20:40:06 | INFO     |   Results folder     : results/Llama-3.2-3B
+2026-05-25 20:40:06 | INFO     |   Samples            : 10,606
+2026-05-25 20:40:06 | INFO     |   Time               : 448.74 min  (2.54 sec/example)
+2026-05-25 20:40:06 | INFO     | 
+2026-05-25 20:40:06 | INFO     |   Status classification:
+2026-05-25 20:40:06 | INFO     |     Accuracy             : 0.9282  (92.82%)
+2026-05-25 20:40:06 | INFO     |     Precision (Weighted) : 0.9194
+2026-05-25 20:40:06 | INFO     |     Recall    (Weighted) : 0.9282
+2026-05-25 20:40:06 | INFO     |     F1-Score  (Weighted) : 0.9198
+2026-05-25 20:40:06 | INFO     |     Precision (Macro)    : 0.5436
+2026-05-25 20:40:06 | INFO     |     Recall    (Macro)    : 0.4586
+2026-05-25 20:40:06 | INFO     |     F1-Score  (Macro)    : 0.4877
+2026-05-25 20:40:06 | INFO     | 
+2026-05-25 20:40:06 | INFO     |   Output quality:
+2026-05-25 20:40:06 | INFO     |     Exact Match Accuracy : 0.2928  (29.28%)
+2026-05-25 20:40:06 | INFO     |     Avg Partial Match    : 0.8569
+2026-05-25 20:40:06 | INFO     |     Avg Word-level F1    : 0.8490
+2026-05-25 20:40:06 | INFO     | 
+2026-05-25 20:40:06 | INFO     |   Compare with Base-LLM-Evaluation/results/ to measure fine-tuning gain.
+2026-05-25 20:40:06 | INFO     | ======================================================================
+2026-05-25 20:40:06 | INFO     | Done.

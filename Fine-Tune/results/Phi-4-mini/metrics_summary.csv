@@ -1,0 +1,12 @@
+Metric,Score
+Model,Phi-4-mini (fine-tuned)
+Accuracy,0.9697341127663587
+Precision (Macro),0.5882261859159229
+Precision (Weighted),0.9762124867283973
+Recall (Macro),0.6464877537619257
+Recall (Weighted),0.9697341127663587
+F1-Score (Macro),0.6133818752940853
+F1-Score (Weighted),0.9717422967424109
+Exact Match Accuracy,0.4155195172543843
+Avg Partial Match,0.9306588553949222
+Avg F1 (Word-level),0.9302917892807354

@@ -1,0 +1,681 @@
+2026-05-25 22:58:23 | INFO     | Log file: /home/students/Desktop/projects/Mitre-Dataset/Fine-Tune/results/Qwen2.5-1.5B/metrics_run.log
+2026-05-25 22:58:23 | INFO     | PID 698463 — metrics.py starting
+2026-05-25 22:58:23 | INFO     | Model        : Qwen2.5-1.5B  (models/Qwen2.5-1.5B/)
+2026-05-25 22:58:23 | INFO     | Output dir   : results/Qwen2.5-1.5B
+2026-05-25 22:58:23 | INFO     | Python 3.12.3  |  cwd: /home/students/Desktop/projects/Mitre-Dataset/Fine-Tune
+2026-05-25 22:58:23 | INFO     | ======================================================================
+2026-05-25 22:58:23 | INFO     | CONFIGURATION
+2026-05-25 22:58:23 | INFO     | ======================================================================
+2026-05-25 22:58:23 | INFO     |   kaggle_dataset              : abirashab/train-test-val
+2026-05-25 22:58:23 | INFO     |   data_path                   : None
+2026-05-25 22:58:23 | INFO     |   splits                      : ['test']
+2026-05-25 22:58:23 | INFO     |   train_file                  : train.jsonl
+2026-05-25 22:58:23 | INFO     |   val_file                    : val.jsonl
+2026-05-25 22:58:23 | INFO     |   test_file                   : test.jsonl
+2026-05-25 22:58:23 | INFO     |   eval_limit                  : None
+2026-05-25 22:58:23 | INFO     |   suspicious_ratio            : 0.3
+2026-05-25 22:58:23 | INFO     |   prioritize_shortest         : True
+2026-05-25 22:58:23 | INFO     |   max_new_tokens              : 512
+2026-05-25 22:58:23 | INFO     |   temperature                 : 0.7
+2026-05-25 22:58:23 | INFO     |   do_sample                   : True
+2026-05-25 22:58:23 | INFO     |   top_p                       : 0.9
+2026-05-25 22:58:23 | INFO     |   max_input_chars             : 6000
+2026-05-25 22:58:23 | INFO     |   max_length_tokens           : 3072
+2026-05-25 22:58:23 | INFO     |   show_examples               : 10
+2026-05-25 22:58:23 | INFO     |   save_results                : True
+2026-05-25 22:58:23 | INFO     |   output_dir                  : results/Qwen2.5-1.5B
+2026-05-25 22:58:23 | INFO     |   checkpoint_interval         : 50
+2026-05-25 22:58:23 | INFO     |   no_resume                   : False
+2026-05-25 22:58:23 | INFO     |   model_key                   : qwen
+2026-05-25 22:58:23 | INFO     |   model_name                  : Qwen/Qwen2.5-1.5B-Instruct
+2026-05-25 22:58:23 | INFO     |   display_name                : Qwen2.5-1.5B
+2026-05-25 22:58:23 | INFO     |   model_path                  : models/Qwen2.5-1.5B/
+2026-05-25 22:58:23 | INFO     | ======================================================================
+2026-05-25 22:58:23 | INFO     | STEP 1 — Loading fine-tuned model
+2026-05-25 22:58:23 | INFO     | ======================================================================
+2026-05-25 22:58:23 | INFO     | Model path    : models/Qwen2.5-1.5B/
+2026-05-25 22:58:23 | INFO     | Display name  : Qwen2.5-1.5B
+2026-05-25 22:58:23 | INFO     | Chat template : qwen
+2026-05-25 22:58:23 | INFO     | torch_dtype   : torch.float16
+2026-05-25 22:58:24 | INFO     | HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 22:58:24 | INFO     | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-1.5B-Instruct/989aa7980e4cf806f80c7fef2b1adb7bc71aa306/config.json "HTTP/1.1 200 OK"
+2026-05-25 22:58:24 | INFO     | HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 22:58:24 | INFO     | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-1.5B-Instruct/989aa7980e4cf806f80c7fef2b1adb7bc71aa306/config.json "HTTP/1.1 200 OK"
+2026-05-25 22:58:25 | INFO     | HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/resolve/main/generation_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-25 22:58:25 | INFO     | HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-1.5B-Instruct/989aa7980e4cf806f80c7fef2b1adb7bc71aa306/generation_config.json "HTTP/1.1 200 OK"
+2026-05-25 22:58:25 | INFO     | HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/resolve/main/custom_generate/generate.py "HTTP/1.1 404 Not Found"
+2026-05-25 22:58:25 | INFO     | GPU memory after load: 2.88 GB
+2026-05-25 22:58:25 | INFO     | Model device: cuda:0
+2026-05-25 22:58:25 | INFO     | ======================================================================
+2026-05-25 22:58:25 | INFO     | STEP 2 — Loading dataset
+2026-05-25 22:58:25 | INFO     | ======================================================================
+2026-05-25 22:58:25 | INFO     | Downloading Kaggle dataset: abirashab/train-test-val
+2026-05-25 22:58:25 | INFO     | (Cached after first download — subsequent runs are instant.)
+2026-05-25 22:58:25 | INFO     | Dataset available at: /home/students/.cache/kagglehub/datasets/abirashab/train-test-val/versions/1
+2026-05-25 22:58:25 | INFO     |   test  → /home/students/.cache/kagglehub/datasets/abirashab/train-test-val/versions/1/test.jsonl
+2026-05-25 22:58:25 | INFO     | HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/json/json.py "HTTP/1.1 200 OK"
+2026-05-25 22:58:25 | INFO     | Loaded splits: ['test']  —  10,606 examples.  Columns: ['instruction', 'input', 'output']
+2026-05-25 22:58:25 | INFO     | ======================================================================
+2026-05-25 22:58:25 | INFO     | STEP 3 — Stratified sampling
+2026-05-25 22:58:25 | INFO     | ======================================================================
+2026-05-25 22:58:25 | INFO     | Using full dataset: 10,606 examples
+2026-05-25 22:58:25 | INFO     | ======================================================================
+2026-05-25 22:58:25 | INFO     | STEP 4 — Running evaluation
+2026-05-25 22:58:25 | INFO     | ======================================================================
+2026-05-25 22:58:25 | INFO     | Evaluating 10,606 examples  (chat template: qwen)
+2026-05-25 22:58:25 | INFO     | No eval checkpoint found; starting from scratch.
+2026-05-25 22:58:28 | INFO     |   [    1/10606]  0.0 min elapsed  (2.5 sec/example)
+2026-05-25 23:01:16 | INFO     |   [   50/10606]  2.8 min elapsed  (3.4 sec/example)
+2026-05-25 23:01:16 | INFO     |   [checkpoint] 50 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:03:54 | INFO     |   [  100/10606]  5.5 min elapsed  (3.3 sec/example)
+2026-05-25 23:03:54 | INFO     |   [checkpoint] 100 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:06:37 | INFO     |   [  150/10606]  8.2 min elapsed  (3.3 sec/example)
+2026-05-25 23:06:37 | INFO     |   [checkpoint] 150 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:09:12 | INFO     |   [  200/10606]  10.8 min elapsed  (3.2 sec/example)
+2026-05-25 23:09:12 | INFO     |   [checkpoint] 200 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:11:49 | INFO     |   [  250/10606]  13.4 min elapsed  (3.2 sec/example)
+2026-05-25 23:11:49 | INFO     |   [checkpoint] 250 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:15:10 | INFO     |   [  300/10606]  16.7 min elapsed  (3.3 sec/example)
+2026-05-25 23:15:10 | INFO     |   [checkpoint] 300 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:18:21 | INFO     |   [  350/10606]  19.9 min elapsed  (3.4 sec/example)
+2026-05-25 23:18:21 | INFO     |   [checkpoint] 350 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:21:12 | INFO     |   [  400/10606]  22.8 min elapsed  (3.4 sec/example)
+2026-05-25 23:21:12 | INFO     |   [checkpoint] 400 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:23:41 | INFO     |   [  450/10606]  25.3 min elapsed  (3.4 sec/example)
+2026-05-25 23:23:41 | INFO     |   [checkpoint] 450 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:26:50 | INFO     |   [  500/10606]  28.4 min elapsed  (3.4 sec/example)
+2026-05-25 23:26:50 | INFO     |   [checkpoint] 500 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:30:06 | INFO     |   [  550/10606]  31.7 min elapsed  (3.5 sec/example)
+2026-05-25 23:30:06 | INFO     |   [checkpoint] 550 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:33:36 | INFO     |   [  600/10606]  35.2 min elapsed  (3.5 sec/example)
+2026-05-25 23:33:36 | INFO     |   [checkpoint] 600 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:36:19 | INFO     |   [  650/10606]  37.9 min elapsed  (3.5 sec/example)
+2026-05-25 23:36:19 | INFO     |   [checkpoint] 650 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:38:55 | INFO     |   [  700/10606]  40.5 min elapsed  (3.5 sec/example)
+2026-05-25 23:38:55 | INFO     |   [checkpoint] 700 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:41:34 | INFO     |   [  750/10606]  43.1 min elapsed  (3.5 sec/example)
+2026-05-25 23:41:34 | INFO     |   [checkpoint] 750 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:44:59 | INFO     |   [  800/10606]  46.6 min elapsed  (3.5 sec/example)
+2026-05-25 23:44:59 | INFO     |   [checkpoint] 800 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:47:39 | INFO     |   [  850/10606]  49.2 min elapsed  (3.5 sec/example)
+2026-05-25 23:47:39 | INFO     |   [checkpoint] 850 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:50:26 | INFO     |   [  900/10606]  52.0 min elapsed  (3.5 sec/example)
+2026-05-25 23:50:26 | INFO     |   [checkpoint] 900 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:53:54 | INFO     |   [  950/10606]  55.5 min elapsed  (3.5 sec/example)
+2026-05-25 23:53:54 | INFO     |   [checkpoint] 950 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-25 23:57:37 | INFO     |   [ 1000/10606]  59.2 min elapsed  (3.6 sec/example)
+2026-05-25 23:57:37 | INFO     |   [checkpoint] 1000 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:00:52 | INFO     |   [ 1050/10606]  62.4 min elapsed  (3.6 sec/example)
+2026-05-26 00:00:52 | INFO     |   [checkpoint] 1050 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:03:35 | INFO     |   [ 1100/10606]  65.2 min elapsed  (3.6 sec/example)
+2026-05-26 00:03:35 | INFO     |   [checkpoint] 1100 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:07:01 | INFO     |   [ 1150/10606]  68.6 min elapsed  (3.6 sec/example)
+2026-05-26 00:07:01 | INFO     |   [checkpoint] 1150 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:09:50 | INFO     |   [ 1200/10606]  71.4 min elapsed  (3.6 sec/example)
+2026-05-26 00:09:50 | INFO     |   [checkpoint] 1200 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:12:51 | INFO     |   [ 1250/10606]  74.4 min elapsed  (3.6 sec/example)
+2026-05-26 00:12:51 | INFO     |   [checkpoint] 1250 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:16:02 | INFO     |   [ 1300/10606]  77.6 min elapsed  (3.6 sec/example)
+2026-05-26 00:16:02 | INFO     |   [checkpoint] 1300 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:18:48 | INFO     |   [ 1350/10606]  80.4 min elapsed  (3.6 sec/example)
+2026-05-26 00:18:48 | INFO     |   [checkpoint] 1350 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:22:46 | INFO     |   [ 1400/10606]  84.3 min elapsed  (3.6 sec/example)
+2026-05-26 00:22:46 | INFO     |   [checkpoint] 1400 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:25:37 | INFO     |   [ 1450/10606]  87.2 min elapsed  (3.6 sec/example)
+2026-05-26 00:25:37 | INFO     |   [checkpoint] 1450 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:28:24 | INFO     |   [ 1500/10606]  90.0 min elapsed  (3.6 sec/example)
+2026-05-26 00:28:24 | INFO     |   [checkpoint] 1500 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:31:18 | INFO     |   [ 1550/10606]  92.9 min elapsed  (3.6 sec/example)
+2026-05-26 00:31:18 | INFO     |   [checkpoint] 1550 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:34:12 | INFO     |   [ 1600/10606]  95.8 min elapsed  (3.6 sec/example)
+2026-05-26 00:34:12 | INFO     |   [checkpoint] 1600 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:37:00 | INFO     |   [ 1650/10606]  98.6 min elapsed  (3.6 sec/example)
+2026-05-26 00:37:00 | INFO     |   [checkpoint] 1650 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:39:59 | INFO     |   [ 1700/10606]  101.6 min elapsed  (3.6 sec/example)
+2026-05-26 00:39:59 | INFO     |   [checkpoint] 1700 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:42:30 | INFO     |   [ 1750/10606]  104.1 min elapsed  (3.6 sec/example)
+2026-05-26 00:42:30 | INFO     |   [checkpoint] 1750 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:45:22 | INFO     |   [ 1800/10606]  106.9 min elapsed  (3.6 sec/example)
+2026-05-26 00:45:22 | INFO     |   [checkpoint] 1800 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:48:31 | INFO     |   [ 1850/10606]  110.1 min elapsed  (3.6 sec/example)
+2026-05-26 00:48:31 | INFO     |   [checkpoint] 1850 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:51:32 | INFO     |   [ 1900/10606]  113.1 min elapsed  (3.6 sec/example)
+2026-05-26 00:51:32 | INFO     |   [checkpoint] 1900 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:55:04 | INFO     |   [ 1950/10606]  116.7 min elapsed  (3.6 sec/example)
+2026-05-26 00:55:04 | INFO     |   [checkpoint] 1950 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 00:57:54 | INFO     |   [ 2000/10606]  119.5 min elapsed  (3.6 sec/example)
+2026-05-26 00:57:54 | INFO     |   [checkpoint] 2000 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:01:37 | INFO     |   [ 2050/10606]  123.2 min elapsed  (3.6 sec/example)
+2026-05-26 01:01:37 | INFO     |   [checkpoint] 2050 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:04:28 | INFO     |   [ 2100/10606]  126.0 min elapsed  (3.6 sec/example)
+2026-05-26 01:04:28 | INFO     |   [checkpoint] 2100 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:07:22 | INFO     |   [ 2150/10606]  128.9 min elapsed  (3.6 sec/example)
+2026-05-26 01:07:22 | INFO     |   [checkpoint] 2150 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:10:53 | INFO     |   [ 2200/10606]  132.5 min elapsed  (3.6 sec/example)
+2026-05-26 01:10:53 | INFO     |   [checkpoint] 2200 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:13:58 | INFO     |   [ 2250/10606]  135.5 min elapsed  (3.6 sec/example)
+2026-05-26 01:13:58 | INFO     |   [checkpoint] 2250 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:16:43 | INFO     |   [ 2300/10606]  138.3 min elapsed  (3.6 sec/example)
+2026-05-26 01:16:43 | INFO     |   [checkpoint] 2300 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:19:39 | INFO     |   [ 2350/10606]  141.2 min elapsed  (3.6 sec/example)
+2026-05-26 01:19:39 | INFO     |   [checkpoint] 2350 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:22:53 | INFO     |   [ 2400/10606]  144.5 min elapsed  (3.6 sec/example)
+2026-05-26 01:22:53 | INFO     |   [checkpoint] 2400 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:25:14 | INFO     |   [ 2450/10606]  146.8 min elapsed  (3.6 sec/example)
+2026-05-26 01:25:14 | INFO     |   [checkpoint] 2450 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:28:07 | INFO     |   [ 2500/10606]  149.7 min elapsed  (3.6 sec/example)
+2026-05-26 01:28:07 | INFO     |   [checkpoint] 2500 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:31:16 | INFO     |   [ 2550/10606]  152.8 min elapsed  (3.6 sec/example)
+2026-05-26 01:31:16 | INFO     |   [checkpoint] 2550 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:34:14 | INFO     |   [ 2600/10606]  155.8 min elapsed  (3.6 sec/example)
+2026-05-26 01:34:14 | INFO     |   [checkpoint] 2600 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:37:28 | INFO     |   [ 2650/10606]  159.0 min elapsed  (3.6 sec/example)
+2026-05-26 01:37:28 | INFO     |   [checkpoint] 2650 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:40:11 | INFO     |   [ 2700/10606]  161.8 min elapsed  (3.6 sec/example)
+2026-05-26 01:40:12 | INFO     |   [checkpoint] 2700 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:43:48 | INFO     |   [ 2750/10606]  165.4 min elapsed  (3.6 sec/example)
+2026-05-26 01:43:49 | INFO     |   [checkpoint] 2750 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:46:33 | INFO     |   [ 2800/10606]  168.1 min elapsed  (3.6 sec/example)
+2026-05-26 01:46:33 | INFO     |   [checkpoint] 2800 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:49:29 | INFO     |   [ 2850/10606]  171.1 min elapsed  (3.6 sec/example)
+2026-05-26 01:49:29 | INFO     |   [checkpoint] 2850 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:51:53 | INFO     |   [ 2900/10606]  173.5 min elapsed  (3.6 sec/example)
+2026-05-26 01:51:54 | INFO     |   [checkpoint] 2900 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:55:03 | INFO     |   [ 2950/10606]  176.6 min elapsed  (3.6 sec/example)
+2026-05-26 01:55:03 | INFO     |   [checkpoint] 2950 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 01:58:13 | INFO     |   [ 3000/10606]  179.8 min elapsed  (3.6 sec/example)
+2026-05-26 01:58:13 | INFO     |   [checkpoint] 3000 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:01:04 | INFO     |   [ 3050/10606]  182.7 min elapsed  (3.6 sec/example)
+2026-05-26 02:01:04 | INFO     |   [checkpoint] 3050 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:04:00 | INFO     |   [ 3100/10606]  185.6 min elapsed  (3.6 sec/example)
+2026-05-26 02:04:01 | INFO     |   [checkpoint] 3100 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:06:38 | INFO     |   [ 3150/10606]  188.2 min elapsed  (3.6 sec/example)
+2026-05-26 02:06:39 | INFO     |   [checkpoint] 3150 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:09:28 | INFO     |   [ 3200/10606]  191.0 min elapsed  (3.6 sec/example)
+2026-05-26 02:09:28 | INFO     |   [checkpoint] 3200 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:12:38 | INFO     |   [ 3250/10606]  194.2 min elapsed  (3.6 sec/example)
+2026-05-26 02:12:38 | INFO     |   [checkpoint] 3250 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:15:58 | INFO     |   [ 3300/10606]  197.5 min elapsed  (3.6 sec/example)
+2026-05-26 02:15:58 | INFO     |   [checkpoint] 3300 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:19:21 | INFO     |   [ 3350/10606]  200.9 min elapsed  (3.6 sec/example)
+2026-05-26 02:19:21 | INFO     |   [checkpoint] 3350 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:22:45 | INFO     |   [ 3400/10606]  204.3 min elapsed  (3.6 sec/example)
+2026-05-26 02:22:45 | INFO     |   [checkpoint] 3400 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:25:31 | INFO     |   [ 3450/10606]  207.1 min elapsed  (3.6 sec/example)
+2026-05-26 02:25:31 | INFO     |   [checkpoint] 3450 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:28:20 | INFO     |   [ 3500/10606]  209.9 min elapsed  (3.6 sec/example)
+2026-05-26 02:28:20 | INFO     |   [checkpoint] 3500 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:31:41 | INFO     |   [ 3550/10606]  213.3 min elapsed  (3.6 sec/example)
+2026-05-26 02:31:41 | INFO     |   [checkpoint] 3550 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:35:02 | INFO     |   [ 3600/10606]  216.6 min elapsed  (3.6 sec/example)
+2026-05-26 02:35:02 | INFO     |   [checkpoint] 3600 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:37:48 | INFO     |   [ 3650/10606]  219.4 min elapsed  (3.6 sec/example)
+2026-05-26 02:37:48 | INFO     |   [checkpoint] 3650 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:41:13 | INFO     |   [ 3700/10606]  222.8 min elapsed  (3.6 sec/example)
+2026-05-26 02:41:13 | INFO     |   [checkpoint] 3700 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:43:45 | INFO     |   [ 3750/10606]  225.3 min elapsed  (3.6 sec/example)
+2026-05-26 02:43:45 | INFO     |   [checkpoint] 3750 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:47:00 | INFO     |   [ 3800/10606]  228.6 min elapsed  (3.6 sec/example)
+2026-05-26 02:47:00 | INFO     |   [checkpoint] 3800 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:50:20 | INFO     |   [ 3850/10606]  231.9 min elapsed  (3.6 sec/example)
+2026-05-26 02:50:20 | INFO     |   [checkpoint] 3850 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:53:16 | INFO     |   [ 3900/10606]  234.8 min elapsed  (3.6 sec/example)
+2026-05-26 02:53:16 | INFO     |   [checkpoint] 3900 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:56:28 | INFO     |   [ 3950/10606]  238.0 min elapsed  (3.6 sec/example)
+2026-05-26 02:56:28 | INFO     |   [checkpoint] 3950 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 02:59:46 | INFO     |   [ 4000/10606]  241.3 min elapsed  (3.6 sec/example)
+2026-05-26 02:59:46 | INFO     |   [checkpoint] 4000 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:02:52 | INFO     |   [ 4050/10606]  244.4 min elapsed  (3.6 sec/example)
+2026-05-26 03:02:52 | INFO     |   [checkpoint] 4050 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:05:44 | INFO     |   [ 4100/10606]  247.3 min elapsed  (3.6 sec/example)
+2026-05-26 03:05:45 | INFO     |   [checkpoint] 4100 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:08:50 | INFO     |   [ 4150/10606]  250.4 min elapsed  (3.6 sec/example)
+2026-05-26 03:08:50 | INFO     |   [checkpoint] 4150 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:12:00 | INFO     |   [ 4200/10606]  253.6 min elapsed  (3.6 sec/example)
+2026-05-26 03:12:00 | INFO     |   [checkpoint] 4200 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:15:15 | INFO     |   [ 4250/10606]  256.8 min elapsed  (3.6 sec/example)
+2026-05-26 03:15:15 | INFO     |   [checkpoint] 4250 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:18:07 | INFO     |   [ 4300/10606]  259.7 min elapsed  (3.6 sec/example)
+2026-05-26 03:18:07 | INFO     |   [checkpoint] 4300 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:21:00 | INFO     |   [ 4350/10606]  262.6 min elapsed  (3.6 sec/example)
+2026-05-26 03:21:00 | INFO     |   [checkpoint] 4350 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:24:18 | INFO     |   [ 4400/10606]  265.9 min elapsed  (3.6 sec/example)
+2026-05-26 03:24:18 | INFO     |   [checkpoint] 4400 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:27:09 | INFO     |   [ 4450/10606]  268.7 min elapsed  (3.6 sec/example)
+2026-05-26 03:27:09 | INFO     |   [checkpoint] 4450 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:30:24 | INFO     |   [ 4500/10606]  272.0 min elapsed  (3.6 sec/example)
+2026-05-26 03:30:24 | INFO     |   [checkpoint] 4500 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:34:02 | INFO     |   [ 4550/10606]  275.6 min elapsed  (3.6 sec/example)
+2026-05-26 03:34:02 | INFO     |   [checkpoint] 4550 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:36:47 | INFO     |   [ 4600/10606]  278.4 min elapsed  (3.6 sec/example)
+2026-05-26 03:36:47 | INFO     |   [checkpoint] 4600 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:39:54 | INFO     |   [ 4650/10606]  281.5 min elapsed  (3.6 sec/example)
+2026-05-26 03:39:54 | INFO     |   [checkpoint] 4650 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:42:46 | INFO     |   [ 4700/10606]  284.3 min elapsed  (3.6 sec/example)
+2026-05-26 03:42:46 | INFO     |   [checkpoint] 4700 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:45:24 | INFO     |   [ 4750/10606]  287.0 min elapsed  (3.6 sec/example)
+2026-05-26 03:45:24 | INFO     |   [checkpoint] 4750 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:48:26 | INFO     |   [ 4800/10606]  290.0 min elapsed  (3.6 sec/example)
+2026-05-26 03:48:26 | INFO     |   [checkpoint] 4800 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:51:52 | INFO     |   [ 4850/10606]  293.4 min elapsed  (3.6 sec/example)
+2026-05-26 03:51:52 | INFO     |   [checkpoint] 4850 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:54:57 | INFO     |   [ 4900/10606]  296.5 min elapsed  (3.6 sec/example)
+2026-05-26 03:54:57 | INFO     |   [checkpoint] 4900 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 03:57:52 | INFO     |   [ 4950/10606]  299.4 min elapsed  (3.6 sec/example)
+2026-05-26 03:57:52 | INFO     |   [checkpoint] 4950 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:01:20 | INFO     |   [ 5000/10606]  302.9 min elapsed  (3.6 sec/example)
+2026-05-26 04:01:20 | INFO     |   [checkpoint] 5000 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:04:25 | INFO     |   [ 5050/10606]  306.0 min elapsed  (3.6 sec/example)
+2026-05-26 04:04:25 | INFO     |   [checkpoint] 5050 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:08:08 | INFO     |   [ 5100/10606]  309.7 min elapsed  (3.6 sec/example)
+2026-05-26 04:08:08 | INFO     |   [checkpoint] 5100 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:11:02 | INFO     |   [ 5150/10606]  312.6 min elapsed  (3.6 sec/example)
+2026-05-26 04:11:02 | INFO     |   [checkpoint] 5150 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:14:07 | INFO     |   [ 5200/10606]  315.7 min elapsed  (3.6 sec/example)
+2026-05-26 04:14:07 | INFO     |   [checkpoint] 5200 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:17:14 | INFO     |   [ 5250/10606]  318.8 min elapsed  (3.6 sec/example)
+2026-05-26 04:17:14 | INFO     |   [checkpoint] 5250 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:20:10 | INFO     |   [ 5300/10606]  321.7 min elapsed  (3.6 sec/example)
+2026-05-26 04:20:10 | INFO     |   [checkpoint] 5300 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:23:50 | INFO     |   [ 5350/10606]  325.4 min elapsed  (3.6 sec/example)
+2026-05-26 04:23:50 | INFO     |   [checkpoint] 5350 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:27:07 | INFO     |   [ 5400/10606]  328.7 min elapsed  (3.7 sec/example)
+2026-05-26 04:27:07 | INFO     |   [checkpoint] 5400 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:29:59 | INFO     |   [ 5450/10606]  331.6 min elapsed  (3.7 sec/example)
+2026-05-26 04:29:59 | INFO     |   [checkpoint] 5450 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:33:19 | INFO     |   [ 5500/10606]  334.9 min elapsed  (3.7 sec/example)
+2026-05-26 04:33:19 | INFO     |   [checkpoint] 5500 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:36:35 | INFO     |   [ 5550/10606]  338.2 min elapsed  (3.7 sec/example)
+2026-05-26 04:36:35 | INFO     |   [checkpoint] 5550 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:40:12 | INFO     |   [ 5600/10606]  341.8 min elapsed  (3.7 sec/example)
+2026-05-26 04:40:12 | INFO     |   [checkpoint] 5600 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:43:22 | INFO     |   [ 5650/10606]  344.9 min elapsed  (3.7 sec/example)
+2026-05-26 04:43:22 | INFO     |   [checkpoint] 5650 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:46:20 | INFO     |   [ 5700/10606]  347.9 min elapsed  (3.7 sec/example)
+2026-05-26 04:46:20 | INFO     |   [checkpoint] 5700 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:48:55 | INFO     |   [ 5750/10606]  350.5 min elapsed  (3.7 sec/example)
+2026-05-26 04:48:55 | INFO     |   [checkpoint] 5750 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:52:23 | INFO     |   [ 5800/10606]  354.0 min elapsed  (3.7 sec/example)
+2026-05-26 04:52:23 | INFO     |   [checkpoint] 5800 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:55:19 | INFO     |   [ 5850/10606]  356.9 min elapsed  (3.7 sec/example)
+2026-05-26 04:55:19 | INFO     |   [checkpoint] 5850 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 04:58:19 | INFO     |   [ 5900/10606]  359.9 min elapsed  (3.7 sec/example)
+2026-05-26 04:58:19 | INFO     |   [checkpoint] 5900 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:01:07 | INFO     |   [ 5950/10606]  362.7 min elapsed  (3.7 sec/example)
+2026-05-26 05:01:07 | INFO     |   [checkpoint] 5950 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:04:12 | INFO     |   [ 6000/10606]  365.8 min elapsed  (3.7 sec/example)
+2026-05-26 05:04:12 | INFO     |   [checkpoint] 6000 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:07:24 | INFO     |   [ 6050/10606]  369.0 min elapsed  (3.7 sec/example)
+2026-05-26 05:07:24 | INFO     |   [checkpoint] 6050 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:10:49 | INFO     |   [ 6100/10606]  372.4 min elapsed  (3.7 sec/example)
+2026-05-26 05:10:49 | INFO     |   [checkpoint] 6100 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:13:59 | INFO     |   [ 6150/10606]  375.6 min elapsed  (3.7 sec/example)
+2026-05-26 05:13:59 | INFO     |   [checkpoint] 6150 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:17:09 | INFO     |   [ 6200/10606]  378.7 min elapsed  (3.7 sec/example)
+2026-05-26 05:17:09 | INFO     |   [checkpoint] 6200 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:20:07 | INFO     |   [ 6250/10606]  381.7 min elapsed  (3.7 sec/example)
+2026-05-26 05:20:07 | INFO     |   [checkpoint] 6250 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:23:13 | INFO     |   [ 6300/10606]  384.8 min elapsed  (3.7 sec/example)
+2026-05-26 05:23:13 | INFO     |   [checkpoint] 6300 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:26:23 | INFO     |   [ 6350/10606]  388.0 min elapsed  (3.7 sec/example)
+2026-05-26 05:26:23 | INFO     |   [checkpoint] 6350 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:29:47 | INFO     |   [ 6400/10606]  391.4 min elapsed  (3.7 sec/example)
+2026-05-26 05:29:47 | INFO     |   [checkpoint] 6400 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:32:36 | INFO     |   [ 6450/10606]  394.2 min elapsed  (3.7 sec/example)
+2026-05-26 05:32:36 | INFO     |   [checkpoint] 6450 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:35:41 | INFO     |   [ 6500/10606]  397.3 min elapsed  (3.7 sec/example)
+2026-05-26 05:35:41 | INFO     |   [checkpoint] 6500 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:38:50 | INFO     |   [ 6550/10606]  400.4 min elapsed  (3.7 sec/example)
+2026-05-26 05:38:50 | INFO     |   [checkpoint] 6550 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:41:45 | INFO     |   [ 6600/10606]  403.3 min elapsed  (3.7 sec/example)
+2026-05-26 05:41:45 | INFO     |   [checkpoint] 6600 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:44:53 | INFO     |   [ 6650/10606]  406.5 min elapsed  (3.7 sec/example)
+2026-05-26 05:44:53 | INFO     |   [checkpoint] 6650 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:47:58 | INFO     |   [ 6700/10606]  409.5 min elapsed  (3.7 sec/example)
+2026-05-26 05:47:58 | INFO     |   [checkpoint] 6700 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:51:00 | INFO     |   [ 6750/10606]  412.6 min elapsed  (3.7 sec/example)
+2026-05-26 05:51:00 | INFO     |   [checkpoint] 6750 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:54:15 | INFO     |   [ 6800/10606]  415.8 min elapsed  (3.7 sec/example)
+2026-05-26 05:54:15 | INFO     |   [checkpoint] 6800 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 05:57:05 | INFO     |   [ 6850/10606]  418.7 min elapsed  (3.7 sec/example)
+2026-05-26 05:57:05 | INFO     |   [checkpoint] 6850 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:00:07 | INFO     |   [ 6900/10606]  421.7 min elapsed  (3.7 sec/example)
+2026-05-26 06:00:07 | INFO     |   [checkpoint] 6900 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:03:12 | INFO     |   [ 6950/10606]  424.8 min elapsed  (3.7 sec/example)
+2026-05-26 06:03:12 | INFO     |   [checkpoint] 6950 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:05:58 | INFO     |   [ 7000/10606]  427.5 min elapsed  (3.7 sec/example)
+2026-05-26 06:05:58 | INFO     |   [checkpoint] 7000 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:09:23 | INFO     |   [ 7050/10606]  431.0 min elapsed  (3.7 sec/example)
+2026-05-26 06:09:23 | INFO     |   [checkpoint] 7050 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:12:01 | INFO     |   [ 7100/10606]  433.6 min elapsed  (3.7 sec/example)
+2026-05-26 06:12:01 | INFO     |   [checkpoint] 7100 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:15:18 | INFO     |   [ 7150/10606]  436.9 min elapsed  (3.7 sec/example)
+2026-05-26 06:15:18 | INFO     |   [checkpoint] 7150 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:18:26 | INFO     |   [ 7200/10606]  440.0 min elapsed  (3.7 sec/example)
+2026-05-26 06:18:27 | INFO     |   [checkpoint] 7200 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:21:02 | INFO     |   [ 7250/10606]  442.6 min elapsed  (3.7 sec/example)
+2026-05-26 06:21:02 | INFO     |   [checkpoint] 7250 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:24:35 | INFO     |   [ 7300/10606]  446.2 min elapsed  (3.7 sec/example)
+2026-05-26 06:24:35 | INFO     |   [checkpoint] 7300 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:27:08 | INFO     |   [ 7350/10606]  448.7 min elapsed  (3.7 sec/example)
+2026-05-26 06:27:08 | INFO     |   [checkpoint] 7350 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:29:46 | INFO     |   [ 7400/10606]  451.3 min elapsed  (3.7 sec/example)
+2026-05-26 06:29:46 | INFO     |   [checkpoint] 7400 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:33:05 | INFO     |   [ 7450/10606]  454.7 min elapsed  (3.7 sec/example)
+2026-05-26 06:33:05 | INFO     |   [checkpoint] 7450 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:36:05 | INFO     |   [ 7500/10606]  457.7 min elapsed  (3.7 sec/example)
+2026-05-26 06:36:05 | INFO     |   [checkpoint] 7500 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:39:13 | INFO     |   [ 7550/10606]  460.8 min elapsed  (3.7 sec/example)
+2026-05-26 06:39:13 | INFO     |   [checkpoint] 7550 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:41:59 | INFO     |   [ 7600/10606]  463.6 min elapsed  (3.7 sec/example)
+2026-05-26 06:41:59 | INFO     |   [checkpoint] 7600 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:44:50 | INFO     |   [ 7650/10606]  466.4 min elapsed  (3.7 sec/example)
+2026-05-26 06:44:51 | INFO     |   [checkpoint] 7650 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:47:47 | INFO     |   [ 7700/10606]  469.4 min elapsed  (3.7 sec/example)
+2026-05-26 06:47:47 | INFO     |   [checkpoint] 7700 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:50:53 | INFO     |   [ 7750/10606]  472.5 min elapsed  (3.7 sec/example)
+2026-05-26 06:50:53 | INFO     |   [checkpoint] 7750 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:54:02 | INFO     |   [ 7800/10606]  475.6 min elapsed  (3.7 sec/example)
+2026-05-26 06:54:02 | INFO     |   [checkpoint] 7800 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 06:57:11 | INFO     |   [ 7850/10606]  478.8 min elapsed  (3.7 sec/example)
+2026-05-26 06:57:11 | INFO     |   [checkpoint] 7850 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:00:24 | INFO     |   [ 7900/10606]  482.0 min elapsed  (3.7 sec/example)
+2026-05-26 07:00:24 | INFO     |   [checkpoint] 7900 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:03:03 | INFO     |   [ 7950/10606]  484.6 min elapsed  (3.7 sec/example)
+2026-05-26 07:03:04 | INFO     |   [checkpoint] 7950 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:06:19 | INFO     |   [ 8000/10606]  487.9 min elapsed  (3.7 sec/example)
+2026-05-26 07:06:19 | INFO     |   [checkpoint] 8000 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:09:57 | INFO     |   [ 8050/10606]  491.5 min elapsed  (3.7 sec/example)
+2026-05-26 07:09:57 | INFO     |   [checkpoint] 8050 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:13:06 | INFO     |   [ 8100/10606]  494.7 min elapsed  (3.7 sec/example)
+2026-05-26 07:13:06 | INFO     |   [checkpoint] 8100 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:15:57 | INFO     |   [ 8150/10606]  497.5 min elapsed  (3.7 sec/example)
+2026-05-26 07:15:57 | INFO     |   [checkpoint] 8150 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:18:46 | INFO     |   [ 8200/10606]  500.3 min elapsed  (3.7 sec/example)
+2026-05-26 07:18:46 | INFO     |   [checkpoint] 8200 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:21:35 | INFO     |   [ 8250/10606]  503.2 min elapsed  (3.7 sec/example)
+2026-05-26 07:21:35 | INFO     |   [checkpoint] 8250 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:24:58 | INFO     |   [ 8300/10606]  506.6 min elapsed  (3.7 sec/example)
+2026-05-26 07:24:59 | INFO     |   [checkpoint] 8300 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:28:07 | INFO     |   [ 8350/10606]  509.7 min elapsed  (3.7 sec/example)
+2026-05-26 07:28:07 | INFO     |   [checkpoint] 8350 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:30:33 | INFO     |   [ 8400/10606]  512.1 min elapsed  (3.7 sec/example)
+2026-05-26 07:30:33 | INFO     |   [checkpoint] 8400 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:33:25 | INFO     |   [ 8450/10606]  515.0 min elapsed  (3.7 sec/example)
+2026-05-26 07:33:25 | INFO     |   [checkpoint] 8450 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:37:04 | INFO     |   [ 8500/10606]  518.6 min elapsed  (3.7 sec/example)
+2026-05-26 07:37:04 | INFO     |   [checkpoint] 8500 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:40:10 | INFO     |   [ 8550/10606]  521.8 min elapsed  (3.7 sec/example)
+2026-05-26 07:40:11 | INFO     |   [checkpoint] 8550 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:43:16 | INFO     |   [ 8600/10606]  524.9 min elapsed  (3.7 sec/example)
+2026-05-26 07:43:17 | INFO     |   [checkpoint] 8600 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:46:04 | INFO     |   [ 8650/10606]  527.6 min elapsed  (3.7 sec/example)
+2026-05-26 07:46:04 | INFO     |   [checkpoint] 8650 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:49:26 | INFO     |   [ 8700/10606]  531.0 min elapsed  (3.7 sec/example)
+2026-05-26 07:49:26 | INFO     |   [checkpoint] 8700 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:52:31 | INFO     |   [ 8750/10606]  534.1 min elapsed  (3.7 sec/example)
+2026-05-26 07:52:31 | INFO     |   [checkpoint] 8750 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:55:20 | INFO     |   [ 8800/10606]  536.9 min elapsed  (3.7 sec/example)
+2026-05-26 07:55:20 | INFO     |   [checkpoint] 8800 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 07:58:14 | INFO     |   [ 8850/10606]  539.8 min elapsed  (3.7 sec/example)
+2026-05-26 07:58:14 | INFO     |   [checkpoint] 8850 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:01:33 | INFO     |   [ 8900/10606]  543.1 min elapsed  (3.7 sec/example)
+2026-05-26 08:01:34 | INFO     |   [checkpoint] 8900 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:04:36 | INFO     |   [ 8950/10606]  546.2 min elapsed  (3.7 sec/example)
+2026-05-26 08:04:36 | INFO     |   [checkpoint] 8950 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:07:21 | INFO     |   [ 9000/10606]  548.9 min elapsed  (3.7 sec/example)
+2026-05-26 08:07:21 | INFO     |   [checkpoint] 9000 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:10:30 | INFO     |   [ 9050/10606]  552.1 min elapsed  (3.7 sec/example)
+2026-05-26 08:10:30 | INFO     |   [checkpoint] 9050 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:14:07 | INFO     |   [ 9100/10606]  555.7 min elapsed  (3.7 sec/example)
+2026-05-26 08:14:07 | INFO     |   [checkpoint] 9100 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:16:53 | INFO     |   [ 9150/10606]  558.5 min elapsed  (3.7 sec/example)
+2026-05-26 08:16:53 | INFO     |   [checkpoint] 9150 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:20:05 | INFO     |   [ 9200/10606]  561.7 min elapsed  (3.7 sec/example)
+2026-05-26 08:20:05 | INFO     |   [checkpoint] 9200 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:23:19 | INFO     |   [ 9250/10606]  564.9 min elapsed  (3.7 sec/example)
+2026-05-26 08:23:19 | INFO     |   [checkpoint] 9250 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:26:10 | INFO     |   [ 9300/10606]  567.7 min elapsed  (3.7 sec/example)
+2026-05-26 08:26:10 | INFO     |   [checkpoint] 9300 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:28:53 | INFO     |   [ 9350/10606]  570.5 min elapsed  (3.7 sec/example)
+2026-05-26 08:28:53 | INFO     |   [checkpoint] 9350 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:31:50 | INFO     |   [ 9400/10606]  573.4 min elapsed  (3.7 sec/example)
+2026-05-26 08:31:51 | INFO     |   [checkpoint] 9400 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:34:43 | INFO     |   [ 9450/10606]  576.3 min elapsed  (3.7 sec/example)
+2026-05-26 08:34:43 | INFO     |   [checkpoint] 9450 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:37:54 | INFO     |   [ 9500/10606]  579.5 min elapsed  (3.7 sec/example)
+2026-05-26 08:37:55 | INFO     |   [checkpoint] 9500 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:40:56 | INFO     |   [ 9550/10606]  582.5 min elapsed  (3.7 sec/example)
+2026-05-26 08:40:57 | INFO     |   [checkpoint] 9550 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:43:54 | INFO     |   [ 9600/10606]  585.5 min elapsed  (3.7 sec/example)
+2026-05-26 08:43:54 | INFO     |   [checkpoint] 9600 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:47:39 | INFO     |   [ 9650/10606]  589.2 min elapsed  (3.7 sec/example)
+2026-05-26 08:47:39 | INFO     |   [checkpoint] 9650 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:50:41 | INFO     |   [ 9700/10606]  592.3 min elapsed  (3.7 sec/example)
+2026-05-26 08:50:41 | INFO     |   [checkpoint] 9700 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:53:22 | INFO     |   [ 9750/10606]  595.0 min elapsed  (3.7 sec/example)
+2026-05-26 08:53:23 | INFO     |   [checkpoint] 9750 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:56:52 | INFO     |   [ 9800/10606]  598.4 min elapsed  (3.7 sec/example)
+2026-05-26 08:56:52 | INFO     |   [checkpoint] 9800 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 08:59:35 | INFO     |   [ 9850/10606]  601.2 min elapsed  (3.7 sec/example)
+2026-05-26 08:59:35 | INFO     |   [checkpoint] 9850 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:02:34 | INFO     |   [ 9900/10606]  604.1 min elapsed  (3.7 sec/example)
+2026-05-26 09:02:35 | INFO     |   [checkpoint] 9900 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:05:58 | INFO     |   [ 9950/10606]  607.5 min elapsed  (3.7 sec/example)
+2026-05-26 09:05:58 | INFO     |   [checkpoint] 9950 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:08:56 | INFO     |   [10000/10606]  610.5 min elapsed  (3.7 sec/example)
+2026-05-26 09:08:56 | INFO     |   [checkpoint] 10000 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:11:35 | INFO     |   [10050/10606]  613.2 min elapsed  (3.7 sec/example)
+2026-05-26 09:11:35 | INFO     |   [checkpoint] 10050 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:14:41 | INFO     |   [10100/10606]  616.3 min elapsed  (3.7 sec/example)
+2026-05-26 09:14:42 | INFO     |   [checkpoint] 10100 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:17:47 | INFO     |   [10150/10606]  619.4 min elapsed  (3.7 sec/example)
+2026-05-26 09:17:48 | INFO     |   [checkpoint] 10150 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:20:38 | INFO     |   [10200/10606]  622.2 min elapsed  (3.7 sec/example)
+2026-05-26 09:20:38 | INFO     |   [checkpoint] 10200 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:23:40 | INFO     |   [10250/10606]  625.3 min elapsed  (3.7 sec/example)
+2026-05-26 09:23:41 | INFO     |   [checkpoint] 10250 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:26:26 | INFO     |   [10300/10606]  628.0 min elapsed  (3.7 sec/example)
+2026-05-26 09:26:26 | INFO     |   [checkpoint] 10300 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:29:09 | INFO     |   [10350/10606]  630.7 min elapsed  (3.7 sec/example)
+2026-05-26 09:29:10 | INFO     |   [checkpoint] 10350 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:32:18 | INFO     |   [10400/10606]  633.9 min elapsed  (3.7 sec/example)
+2026-05-26 09:32:18 | INFO     |   [checkpoint] 10400 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:34:51 | INFO     |   [10450/10606]  636.4 min elapsed  (3.7 sec/example)
+2026-05-26 09:34:51 | INFO     |   [checkpoint] 10450 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:38:00 | INFO     |   [10500/10606]  639.6 min elapsed  (3.7 sec/example)
+2026-05-26 09:38:00 | INFO     |   [checkpoint] 10500 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:40:51 | INFO     |   [10550/10606]  642.4 min elapsed  (3.7 sec/example)
+2026-05-26 09:40:52 | INFO     |   [checkpoint] 10550 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:43:34 | INFO     |   [10600/10606]  645.1 min elapsed  (3.7 sec/example)
+2026-05-26 09:43:34 | INFO     |   [checkpoint] 10600 samples saved → results/Qwen2.5-1.5B/eval_checkpoint.json
+2026-05-26 09:43:55 | INFO     | Checkpoint removed after successful completion.
+2026-05-26 09:43:55 | INFO     | ------------------------------------------------------------
+2026-05-26 09:43:55 | INFO     | Example 1/10
+2026-05-26 09:43:55 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 909, "start_time": "2025-09-18T17:40:2...
+2026-05-26 09:43:55 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-26 09:43:55 | INFO     | ------------------------------------------------------------
+2026-05-26 09:43:55 | INFO     | Example 2/10
+2026-05-26 09:43:55 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 1668, "start_time": "2025-10-25T11:18:...
+2026-05-26 09:43:55 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-26 09:43:55 | INFO     | ------------------------------------------------------------
+2026-05-26 09:43:55 | INFO     | Example 3/10
+2026-05-26 09:43:55 | INFO     |   Input     : {"metadata": {"session_id": "20251025_094500", "chunk_index": 45, "start_time": "2025-10-25T03:45:42...
+2026-05-26 09:43:55 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-26 09:43:55 | INFO     | ------------------------------------------------------------
+2026-05-26 09:43:55 | INFO     | Example 4/10
+2026-05-26 09:43:55 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 731, "start_time": "2025-10-25T11:09:0...
+2026-05-26 09:43:55 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-26 09:43:55 | INFO     | ------------------------------------------------------------
+2026-05-26 09:43:55 | INFO     | Example 5/10
+2026-05-26 09:43:55 | INFO     |   Input     : {"metadata": {"session_id": "20251026_065700", "chunk_index": 1517, "start_time": "2025-10-26T01:12:...
+2026-05-26 09:43:55 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-26 09:43:55 | INFO     | ------------------------------------------------------------
+2026-05-26 09:43:55 | INFO     | Example 6/10
+2026-05-26 09:43:55 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 1344, "start_time": "2025-09-18T17:44:...
+2026-05-26 09:43:55 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (5 Network, 2 Process). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard netwo...
+2026-05-26 09:43:55 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (5 Network, 2 Process). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard netwo...
+2026-05-26 09:43:55 | INFO     |   Scores    : exact=0  partial=1.000  word_f1=0.961
+2026-05-26 09:43:55 | INFO     | ------------------------------------------------------------
+2026-05-26 09:43:55 | INFO     | Example 7/10
+2026-05-26 09:43:55 | INFO     |   Input     : {"metadata": {"session_id": "20251025_170100", "chunk_index": 56, "start_time": "2025-10-25T11:02:04...
+2026-05-26 09:43:55 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Scores    : exact=0  partial=0.962  word_f1=0.971
+2026-05-26 09:43:55 | INFO     | ------------------------------------------------------------
+2026-05-26 09:43:55 | INFO     | Example 8/10
+2026-05-26 09:43:55 | INFO     |   Input     : {"metadata": {"session_id": "20251026_065700", "chunk_index": 940, "start_time": "2025-10-26T01:05:1...
+2026-05-26 09:43:55 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Predicted : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Scores    : exact=1  partial=1.000  word_f1=1.000
+2026-05-26 09:43:55 | INFO     | ------------------------------------------------------------
+2026-05-26 09:43:55 | INFO     | Example 9/10
+2026-05-26 09:43:55 | INFO     |   Input     : {"metadata": {"session_id": "20251025_094500", "chunk_index": 1086, "start_time": "2025-10-25T03:56:...
+2026-05-26 09:43:55 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (6 Network, 1 Process). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard netwo...
+2026-05-26 09:43:55 | INFO     |   Predicted : nextname=b'153.13.10.10.in-addr.arpa.' typebitmaps=['PTR'] |>"], "icmphdr": "0", "ethernet": {"source": "00:00:00:00:00:00", "destination": "02:00:00:...
+2026-05-26 09:43:55 | INFO     |   Scores    : exact=0  partial=0.000  word_f1=0.000
+2026-05-26 09:43:55 | INFO     | ------------------------------------------------------------
+2026-05-26 09:43:55 | INFO     | Example 10/10
+2026-05-26 09:43:55 | INFO     |   Input     : {"metadata": {"session_id": "20250918_233300", "chunk_index": 329, "start_time": "2025-09-18T17:36:3...
+2026-05-26 09:43:55 | INFO     |   Expected  : **Normal Activity Detected**: 7 events analyzed (7 Network). No malicious indicators found.
+
+**Normal Patterns Observed:**
+- Standard network traffic ...
+2026-05-26 09:43:55 | INFO     |   Predicted : .0.0', b'vd=0', b'vq=0', b'vr=0', b'vt=0', b'ct=0', b'cm=false', b'cp=true', b'pt=true', b'pf=false', b'pv=1.1', b'pm=true', b'pp=false', b'ph=true', ...
+2026-05-26 09:43:55 | INFO     |   Scores    : exact=0  partial=0.000  word_f1=0.000
+2026-05-26 09:43:55 | INFO     | Evaluation complete: 645.49 min total  (3.65 sec/example)
+2026-05-26 09:43:55 | INFO     | ======================================================================
+2026-05-26 09:43:55 | INFO     | STEP 5 — Computing classification metrics
+2026-05-26 09:43:55 | INFO     | ======================================================================
+2026-05-26 09:43:55 | INFO     | Labels found: ['NORMAL', 'SUSPICIOUS', 'UNKNOWN']
+2026-05-26 09:43:55 | INFO     | True  dist : {'NORMAL': 9648, 'SUSPICIOUS': 958}
+2026-05-26 09:43:55 | INFO     | Pred  dist : {'NORMAL': 8853, 'UNKNOWN': 711, 'SUSPICIOUS': 1042}
+2026-05-26 09:43:55 | INFO     | ======================================================================
+2026-05-26 09:43:55 | INFO     | BASIC STATISTICS
+2026-05-26 09:43:55 | INFO     | ======================================================================
+2026-05-26 09:43:55 | INFO     |   Total examples    : 10,606
+2026-05-26 09:43:55 | INFO     |   Inference time    : 645.49 min
+2026-05-26 09:43:55 | INFO     |   Time per example  : 3.65 sec
+2026-05-26 09:43:55 | INFO     |   Input length — min:564  max:26,480  mean:4,347  median:3,070
+2026-05-26 09:43:55 | INFO     | ======================================================================
+2026-05-26 09:43:55 | INFO     | STATUS CLASSIFICATION METRICS
+2026-05-26 09:43:55 | INFO     | ======================================================================
+2026-05-26 09:43:55 | INFO     |   Accuracy             : 0.8994  (89.94%)
+2026-05-26 09:43:55 | INFO     |   Precision (Macro)    : 0.5912
+2026-05-26 09:43:55 | INFO     |   Precision (Weighted) : 0.9670
+2026-05-26 09:43:55 | INFO     |   Recall    (Macro)    : 0.5872
+2026-05-26 09:43:55 | INFO     |   Recall    (Weighted) : 0.8994
+2026-05-26 09:43:55 | INFO     |   F1-Score  (Macro)    : 0.5881
+2026-05-26 09:43:55 | INFO     |   F1-Score  (Weighted) : 0.9315
+2026-05-26 09:43:55 | INFO     | WORD-LEVEL METRICS
+2026-05-26 09:43:55 | INFO     |   Exact Match Accuracy : 0.2781  (27.81%)
+2026-05-26 09:43:55 | INFO     |   Avg Partial Match    : 0.8462
+2026-05-26 09:43:55 | INFO     |   Avg Word-level F1    : 0.8188
+2026-05-26 09:43:55 | INFO     | SKLEARN CLASSIFICATION REPORT
+2026-05-26 09:43:55 | INFO     | 
+              precision    recall  f1-score   support
+
+      NORMAL       0.98      0.90      0.94      9648
+  SUSPICIOUS       0.79      0.86      0.82       958
+     UNKNOWN       0.00      0.00      0.00         0
+
+    accuracy                           0.90     10606
+   macro avg       0.59      0.59      0.59     10606
+weighted avg       0.97      0.90      0.93     10606
+
+2026-05-26 09:43:55 | INFO     | ======================================================================
+2026-05-26 09:43:55 | INFO     | STEP 6 — Saving results
+2026-05-26 09:43:55 | INFO     | ======================================================================
+2026-05-26 09:43:56 | INFO     | Per-example results saved : results/Qwen2.5-1.5B/evaluation_results.csv
+2026-05-26 09:43:56 | INFO     | Metrics summary saved     : results/Qwen2.5-1.5B/metrics_summary.csv
+2026-05-26 09:43:56 | INFO     | Creating metrics bar chart...
+2026-05-26 09:43:56 | INFO     | Metrics chart saved       : results/Qwen2.5-1.5B/metrics.png
+2026-05-26 09:43:56 | INFO     | Creating confusion matrix...
+2026-05-26 09:43:56 | INFO     | Confusion matrix saved    : results/Qwen2.5-1.5B/confusion_matrix.png
+2026-05-26 09:43:56 | INFO     | ======================================================================
+2026-05-26 09:43:56 | INFO     | FINAL EVALUATION SUMMARY — FINE-TUNED MODEL
+2026-05-26 09:43:56 | INFO     | ======================================================================
+2026-05-26 09:43:56 | INFO     |   Model              : Qwen2.5-1.5B  (fine-tuned from Qwen/Qwen2.5-1.5B-Instruct)
+2026-05-26 09:43:56 | INFO     |   Model path         : models/Qwen2.5-1.5B/
+2026-05-26 09:43:56 | INFO     |   Results folder     : results/Qwen2.5-1.5B
+2026-05-26 09:43:56 | INFO     |   Samples            : 10,606
+2026-05-26 09:43:56 | INFO     |   Time               : 645.49 min  (3.65 sec/example)
+2026-05-26 09:43:56 | INFO     | 
+2026-05-26 09:43:56 | INFO     |   Status classification:
+2026-05-26 09:43:56 | INFO     |     Accuracy             : 0.8994  (89.94%)
+2026-05-26 09:43:56 | INFO     |     Precision (Weighted) : 0.9670
+2026-05-26 09:43:56 | INFO     |     Recall    (Weighted) : 0.8994
+2026-05-26 09:43:56 | INFO     |     F1-Score  (Weighted) : 0.9315
+2026-05-26 09:43:56 | INFO     |     Precision (Macro)    : 0.5912
+2026-05-26 09:43:56 | INFO     |     Recall    (Macro)    : 0.5872
+2026-05-26 09:43:56 | INFO     |     F1-Score  (Macro)    : 0.5881
+2026-05-26 09:43:56 | INFO     | 
+2026-05-26 09:43:56 | INFO     |   Output quality:
+2026-05-26 09:43:56 | INFO     |     Exact Match Accuracy : 0.2781  (27.81%)
+2026-05-26 09:43:56 | INFO     |     Avg Partial Match    : 0.8462
+2026-05-26 09:43:56 | INFO     |     Avg Word-level F1    : 0.8188
+2026-05-26 09:43:56 | INFO     | 
+2026-05-26 09:43:56 | INFO     |   Compare with Base-LLM-Evaluation/results/ to measure fine-tuning gain.
+2026-05-26 09:43:56 | INFO     | ======================================================================
+2026-05-26 09:43:56 | INFO     | Done.
