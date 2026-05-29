@@ -221,6 +221,199 @@ python metrics.py --model llama --model-path models/Llama-3.2-3B --checkpoint-in
 
 ---
 
+## Methodology
+
+This section explains how raw multi-source logs become fine-tuning data and how the trained model is evaluated. Three terms appear throughout the codebase:
+
+> An **event** is a single log entry from one source — one line of activity.  
+> A **session** is all events captured during one monitoring window, grouped by `session_id`.  
+> A **chunk** is 7 consecutive events (by timestamp) from one session — the unit the model sees.
+
+---
+
+### 1. Events — Raw Multi-Source Log Entries
+
+Events are collected from four sources simultaneously during an attack scenario and merged into one stream per session:
+
+| Source | Tool | Event IDs / Type | Key fields |
+|---|---|---|---|
+| Windows Sysmon | ELK / Winlogbeat | 1 (process), 3 (network), 11 (file) | `Image`, `CommandLine`, `DestinationIp` |
+| Windows Security | ELK / Winlogbeat | 4688 (process), 5156/5157 (firewall) | `NewProcessName`, `DestAddress` |
+| Network packets | tshark → JSON | `event_type: "network"` | `layers.IP.src/dst`, `layers.TCP.dport` |
+| Browser activity | ActivityWatch | `event_type: "browser"` | `URL`, `title`, `timestamp` |
+
+Each raw event carries annotation fields (`label`, `mitre_techniques`) added by the human annotator. For example, a process-creation event and a network packet from the same attack session look like:
+
+```json
+// System event — Windows Sysmon EventID 1 (Process Creation)
+{
+  "session_id":       "20250918_091900",
+  "label":            "suspicious",
+  "mitre_techniques": ["T1059.001"],
+  "@timestamp":       "2025-09-18T09:19:00Z",
+  "winlog": {
+    "event_id": 1,
+    "event_data": {
+      "Image":       "C:\\Windows\\System32\\powershell.exe",
+      "CommandLine": "powershell.exe -NoProfile -ExecutionPolicy Bypass -EncodedCommand ...",
+      "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+      "User":        "DESKTOP-ABC123\\Admin"
+    }
+  }
+}
+
+// Network event — PCAP capture
+{
+  "session_id":       "20250918_091900",
+  "label":            "suspicious",
+  "mitre_techniques": ["T1071.001"],
+  "@timestamp":       "2025-09-18T09:19:15Z",
+  "event_type":       "network",
+  "layers": {
+    "IP":  { "src": "192.168.1.100",  "dst": "147.185.221.22" },
+    "TCP": { "sport": "52341", "dport": "4444", "flags": "A"  }
+  },
+  "length": 54
+}
+```
+
+---
+
+### 2. Sessions — One Monitoring Window
+
+A session is identified by its `session_id` (format `YYYYMMDD_HHMMSS`) and contains all events recorded during one continuous monitoring window. A single session may span hundreds of events from all four sources interleaved by timestamp.
+
+| `session_id` | Total events | Suspicious | Normal | Sources |
+|---|---|---|---|---|
+| `20250918_091900` | 147 | 12 | 135 | Sysmon, PCAP, browser |
+
+> **Session integrity rule:** during train/val/test splitting, all chunks from one session are kept in the same split (70 / 15 / 15). This prevents data leakage between splits.
+
+---
+
+### 3. Chunks — The Model's Unit of Input
+
+Events within a session are sorted by `@timestamp` and grouped into fixed-size **chunks of 7 events**. A chunk is intentionally mixed — it may contain events from different sources and a mix of normal and suspicious activity. The chunk is labelled suspicious if *any* of its 7 events is suspicious.
+
+```
+Chunk #0  —  session 20250918_091900
+┌────┬──────────────┬────────────────────────────────────────────┬───────────┐
+│  # │  Timestamp   │  Event                                     │  Label    │
+├────┼──────────────┼────────────────────────────────────────────┼───────────┤
+│  1 │ 09:19:00 UTC │ Sysmon 1 — powershell.exe (encoded cmd)    │ suspicious│
+│  2 │ 09:19:15 UTC │ PCAP — 192.168.1.100 → 147.185.221.22:4444 │ suspicious│
+│  3 │ 09:19:30 UTC │ Sysmon 3 — powershell.exe network conn     │ suspicious│
+│  4 │ 09:19:45 UTC │ Sysmon 1 — explorer.exe (normal startup)   │ normal    │
+│  5 │ 09:20:00 UTC │ Browser — HTTPS to accounts.google.com     │ normal    │
+│  6 │ 09:20:15 UTC │ Sysmon 4688 — notepad.exe                  │ normal    │
+│  7 │ 09:21:30 UTC │ Sysmon 11 — .txt.encrypted file created    │ suspicious│
+└────┴──────────────┴────────────────────────────────────────────┴───────────┘
+Chunk label: SUSPICIOUS  (≥1 suspicious event present)
+```
+
+---
+
+### 4. Feature Engineering — Chunk → Training Triple
+
+Each chunk is converted into an `instruction / input / output` triple. Two transformations are applied before the model sees the data:
+
+**Strip label fields** — the model must not see the answer:
+```
+Removed per log:  label, mitre_techniques, session_id, chunk_label
+```
+
+**Flatten nested structures** — normalises field names across source types:
+```
+winlog.event_data.Image       →  Image
+winlog.event_data.CommandLine →  CommandLine
+layers.IP.dst                 →  DestinationIp
+layers.TCP.dport              →  DestinationPort
+```
+
+The resulting training triple looks like:
+
+**`instruction`** — fixed string, identical for every example:
+```
+Analyze this session log chunk and determine if it contains normal or suspicious
+activity. If suspicious, identify all MITRE ATT&CK techniques and explain why.
+```
+
+**`input`** — JSON-encoded string (metadata + sanitised logs, no label fields):
+```json
+{
+  "metadata": {
+    "session_id":       "20250918_091900",
+    "chunk_index":      0,
+    "start_time":       "2025-09-18T09:19:00Z",
+    "end_time":         "2025-09-18T09:21:30Z",
+    "number_of_events": 7
+  },
+  "logs": [
+    {
+      "@timestamp":  "2025-09-18T09:19:00Z",
+      "Image":       "C:\\Windows\\System32\\powershell.exe",
+      "CommandLine": "powershell.exe -NoProfile -ExecutionPolicy Bypass -EncodedCommand ...",
+      "ParentImage": "C:\\Windows\\System32\\cmd.exe"
+    },
+    {
+      "@timestamp":      "2025-09-18T09:19:15Z",
+      "event_type":      "network",
+      "DestinationIp":   "147.185.221.22",
+      "DestinationPort": "4444",
+      "tcp_flags":       "A",
+      "length":          54
+    }
+    // ... 5 more logs
+  ]
+}
+```
+
+**`output`** — security analysis generated by the annotation pipeline:
+```
+**SECURITY ALERT**: 4 out of 7 events show malicious activity (Severity: CRITICAL)
+
+**Suspicious Events Detected:**
+
+1. [Process] EventID 1 at 2025-09-18T09:19:00Z — CRITICAL
+   powershell.exe spawned by cmd.exe with Base64-encoded command.
+   Indicators: encoded argument, parent-child relationship with cmd.exe
+   Fields: Image=powershell.exe, CommandLine=-EncodedCommand ...
+
+2. [Network] at 2025-09-18T09:19:15Z — CRITICAL
+   Connection to known C2 server 147.185.221.22:4444 (RevengeRAT).
+   Indicators: external IP, high-risk port, small periodic packet (54 B)
+   Fields: DestinationIp=147.185.221.22, DestinationPort=4444, tcp_flags=A
+
+**MITRE ATT&CK Techniques:** T1027, T1059.001, T1071.001, T1095
+**Attack Chain:** c2_beacon_with_execution
+**Recommendation:** Immediate investigation required.
+```
+
+Dataset sizes after splitting: ~90 K train / 12 K val / 12 K test examples.
+
+---
+
+### 5. Fine-Tuning
+
+The triples are fed to `fine_tune.py` as `instruction + input → output` using each model's native chat template. LoRA adapters are trained on the output tokens only (prompt tokens masked with `-100`). See [Fine-Tuning (`fine_tune.py`)](#fine-tuning-fine_tunepy) for hyperparameters and CLI flags.
+
+---
+
+### 6. Evaluation
+
+At evaluation time the model receives only `instruction + input` (no labels, no techniques). Its generated output is scored against the reference on two levels:
+
+| Metric group | Applies to | What it measures |
+|---|---|---|
+| Accuracy, Precision, Recall, F1 | `Status:` field | Correct classification — Normal vs Suspicious |
+| Exact Match Accuracy | Full output | Strict full-string match against the reference |
+| ROUGE-1 / ROUGE-2 / ROUGE-L | Full output | N-gram overlap of the generated explanation |
+| METEOR | Full output | Semantic overlap with stemming |
+
+`extract_status_label()` in `metrics.py` parses the Status from the free-text output by looking for markers such as `**SECURITY ALERT**`, `status: suspicious`, or `status: normal`. See [Evaluation (`metrics.py`)](#evaluation-metricspy) for full details.
+
+---
+
 ## Chat Templates
 
 Each model's native format is applied consistently in `fine_tune.py` and `metrics.py`:
